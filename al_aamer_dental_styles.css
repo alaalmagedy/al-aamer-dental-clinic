@@ -1,0 +1,566 @@
+/* ملف CSS مخصص لعيادة العامر للأسنان */
+:root {
+    --primary-color: #2E7D32;
+    --secondary-color: #1B5E20;
+    --success-color: #4CAF50;
+    --warning-color: #FF9800;
+    --danger-color: #F44336;
+    --light-color: #F1F8E9;
+    --dark-color: #2E7D32;
+    --info-color: #1976D2;
+    --muted-color: #757575;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--dark-color);
+    background: linear-gradient(135deg, #E8F5E8, #F1F8E9);
+}
+
+/* أنيميشنز مخصصة */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 5px var(--primary-color); }
+    50% { box-shadow: 0 0 20px var(--primary-color), 0 0 30px var(--primary-color); }
+    100% { box-shadow: 0 0 5px var(--primary-color); }
+}
+
+/* التخطيط العام */
+.container {
+    max-width: 1200px;
+}
+
+.row {
+    margin: 0 -15px;
+}
+
+.col-md-4, .col-md-6, .col-md-8, .col-md-12 {
+    padding: 0 15px;
+}
+
+/* شريط التنقل المخصص */
+.navbar {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    box-shadow: 0 2px 10px rgba(46, 125, 50, 0.3);
+    transition: all 0.3s ease;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-nav .nav-link {
+    color: white !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    margin: 0 5px;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* القسم الرئيسي */
+.hero-section {
+    background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 50%, #388E3C 100%);
+    color: white;
+    padding: 80px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="teeth" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="2" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23teeth)"/></svg>');
+    opacity: 0.3;
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 1s ease-out;
+}
+
+.hero-section .lead {
+    font-size: 1.3rem;
+    font-weight: 400;
+    animation: fadeIn 1s ease-out 0.2s both;
+}
+
+.hero-section .btn {
+    animation: fadeIn 1s ease-out 0.4s both;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.hero-section .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* البطاقات المخصصة */
+.card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(46, 125, 50, 0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(46, 125, 50, 0.2);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    font-weight: 600;
+    border-bottom: none;
+    padding: 1.5rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* أزرار مخصصة */
+.btn-success {
+    background: linear-gradient(135deg, var(--success-color), #45a049);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #45a049, var(--success-color));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--info-color), #1565C0);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #1565C0, var(--info-color));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
+}
+
+/* النماذج المخصصة */
+.form-control, .form-select {
+    border: 2px solid #E8F5E8;
+    border-radius: 15px;
+    padding: 15px 20px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+    background: white;
+}
+
+.form-label {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* اختيار الوقت المخصص */
+#timeSlots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.time-slot {
+    background: linear-gradient(135deg, #F1F8E9, #E8F5E8);
+    border: 2px solid transparent;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.time-slot:hover {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+}
+
+.time-slot.selected {
+    background: linear-gradient(135deg, var(--success-color), #45a049);
+    color: white;
+    border-color: var(--success-color);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+.time-slot.unavailable {
+    background: #f8f9fa;
+    color: var(--muted-color);
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+/* البطاقات الإحصائية */
+.stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(46, 125, 50, 0.1);
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: 0 15px 40px rgba(46, 125, 50, 0.2);
+}
+
+.stat-card i {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* لوحة تحكم العيادة */
+.dashboard-card {
+    background: linear-gradient(135deg, white, #F1F8E9);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary-color);
+    box-shadow: 0 20px 50px rgba(46, 125, 50, 0.2);
+}
+
+.dashboard-card .card-body {
+    background: linear-gradient(135deg, rgba(46, 125, 50, 0.05), rgba(46, 125, 50, 0.1));
+    border-radius: 0 0 20px 20px;
+}
+
+/* نظام الدفع المخصص */
+.payment-method {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-method:hover {
+    transform: scale(1.02);
+}
+
+.payment-method .card {
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.payment-method .card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 30px rgba(46, 125, 50, 0.2);
+}
+
+/* المواعيد المخصصة */
+.appointment-card {
+    background: linear-gradient(135deg, white, #F1F8E9);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-right: 5px solid var(--primary-color);
+    box-shadow: 0 5px 20px rgba(46, 125, 50, 0.1);
+    transition: all 0.3s ease;
+}
+
+.appointment-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(46, 125, 50, 0.2);
+}
+
+.appointment-card .status {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.status.confirmed {
+    background: linear-gradient(135deg, var(--success-color), #45a049);
+    color: white;
+}
+
+.status.pending {
+    background: linear-gradient(135deg, var(--warning-color), #FF8F00);
+    color: white;
+}
+
+.status.completed {
+    background: linear-gradient(135deg, var(--info-color), #1565C0);
+    color: white;
+}
+
+/* Footer مخصص */
+footer {
+    background: linear-gradient(135deg, #1B5E20, #2E7D32) !important;
+    color: white;
+    position: relative;
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--success-color), var(--warning-color), var(--success-color));
+}
+
+.social-links a {
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.social-links a:hover {
+    transform: translateY(-3px) scale(1.1);
+    color: var(--success-color) !important;
+}
+
+/* النماذج المنبثقة */
+.modal-content {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(46, 125, 50, 0.3);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-bottom: none;
+}
+
+.btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* التبويبات المخصصة */
+.nav-pills .nav-link {
+    background: transparent;
+    color: var(--muted-color);
+    border-radius: 25px;
+    padding: 12px 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.nav-pills .nav-link.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+}
+
+.nav-pills .nav-link:hover {
+    color: var(--primary-color);
+    background: rgba(46, 125, 50, 0.1);
+}
+
+/* التذكيرات */
+.form-check-input:checked {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+/* تنبيهات مخصصة */
+.alert {
+    border: none;
+    border-radius: 15px;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    box-shadow: 0 5px 20px rgba(46, 125, 50, 0.1);
+}
+
+.alert-success {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.2));
+    color: var(--success-color);
+    border-right: 5px solid var(--success-color);
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 152, 0, 0.2));
+    color: var(--warning-color);
+    border-right: 5px solid var(--warning-color);
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(244, 67, 54, 0.2));
+    color: var(--danger-color);
+    border-right: 5px solid var(--danger-color);
+}
+
+.alert-info {
+    background: linear-gradient(135deg, rgba(25, 118, 210, 0.1), rgba(25, 118, 210, 0.2));
+    color: var(--info-color);
+    border-right: 5px solid var(--info-color);
+}
+
+/* الاستجابة */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-section .lead {
+        font-size: 1.1rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    #timeSlots {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+    
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 60px 0;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+}
+
+/* أنيميشنز مخصصة */
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.slide-in {
+    animation: slideIn 0.6s ease-out;
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+.glow-animation {
+    animation: glow 2s infinite;
+}
+
+/* تحسينات إضافية */
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+}
+
+.shadow-green {
+    box-shadow: 0 10px 30px rgba(46, 125, 50, 0.2) !important;
+}
+
+.border-primary-green {
+    border-color: var(--primary-color) !important;
+}
+
+/* تحسينات للأداء */
+.card, .btn, .form-control, .nav-link {
+    will-change: transform;
+}
+
+.transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* طباعة */
+@media print {
+    .navbar, .footer, .btn {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+}
