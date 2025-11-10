@@ -67,6 +67,13 @@
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">
+                        <a class="nav-link" href="login.html" onclick="goToLogin()">
+                            <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
                         <a class="nav-link" href="tel:+967123456789">
                             <i class="fas fa-phone"></i> +967 123 456 789
                         </a>
@@ -734,7 +741,7 @@
                 <div class="col-md-4">
                     <h6 class="mb-3">معلومات الاتصال</h6>
                     <p><i class="fas fa-phone"></i> +967 123 456 789</p>
-                    <p><i class="fas fa-envelope"></i> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a6cfc8c0c9e6c7ca8bc7c7cbc3d48bc2c3c8d2c7ca88c5c9cb">[email&#160;protected]</a></p>
+                    <p><i class="fas fa-envelope"></i> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="751c1b131a3514195814141810075811101b0114195b161a18">[email&#160;protected]</a></p>
                     <p><i class="fas fa-map-marker-alt"></i> خور مكسر، عدن، اليمن</p>
                     <p><i class="fas fa-clock"></i> جميع أيام الأسبوع 8:00 ص - 8:00 م</p>
                 </div>
@@ -816,6 +823,9 @@
     <script>
         // تهيئة التطبيق عند التحميل
         document.addEventListener('DOMContentLoaded', function() {
+            // فحص نوع المستخدم وتوجيهه
+            checkUserType();
+            
             // طلب إذن الإشعارات
             if ('Notification' in window && Notification.permission === 'default') {
                 Notification.requestPermission();
@@ -835,6 +845,138 @@
             // تهيئة PWA
             initializePWA();
         });
+        
+        // فحص نوع المستخدم
+        function checkUserType() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userType = urlParams.get('user');
+            const session = urlParams.get('session');
+            
+            if (userType && session) {
+                // توجيه المستخدم للواجهة المناسبة
+                const dashboardPages = {
+                    'patient': 'patient-dashboard.html',
+                    'admin': 'admin-dashboard.html',
+                    'doctor': 'doctor-dashboard.html',
+                    'cashier': 'cashier-dashboard.html'
+                };
+                
+                if (dashboardPages[userType]) {
+                    // إضافة مؤشر مرئي في الصفحة
+                    showUserIndicator(userType);
+                    
+                    // تعديل شريط التنقل حسب نوع المستخدم
+                    customizeNavigation(userType);
+                }
+            } else {
+                // إذا لم يكن هناك مستخدم محدد، عرض خيار تسجيل الدخول
+                showLoginOption();
+            }
+        }
+        
+        // عرض مؤشر نوع المستخدم
+        function showUserIndicator(userType) {
+            const userTypes = {
+                'patient': { name: 'مريض', color: 'success', icon: 'fas fa-user' },
+                'admin': { name: 'إداري', color: 'primary', icon: 'fas fa-user-shield' },
+                'doctor': { name: 'طبيب', color: 'danger', icon: 'fas fa-user-md' },
+                'cashier': { name: 'كاشير', color: 'warning', icon: 'fas fa-cash-register' }
+            };
+            
+            const user = userTypes[userType];
+            if (user) {
+                const indicator = document.createElement('div');
+                indicator.className = `alert alert-${user.color} alert-dismissible fade show position-fixed`;
+                indicator.style.top = '20px';
+                indicator.style.left = '20px';
+                indicator.style.zIndex = '9999';
+                indicator.innerHTML = `
+                    <i class="${user.icon} me-2"></i>
+                    تسجيل الدخول كـ <strong>${user.name}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                document.body.appendChild(indicator);
+            }
+        }
+        
+        // تخصيص التنقل حسب نوع المستخدم
+        function customizeNavigation(userType) {
+            const nav = document.querySelector('.navbar-nav');
+            if (!nav) return;
+            
+            // إضافة زر تسجيل الدخول/الخروج
+            const loginButton = document.createElement('li');
+            loginButton.className = 'nav-item';
+            
+            if (userType) {
+                // زر تسجيل الخروج
+                loginButton.innerHTML = `
+                    <a class="nav-link" href="login.html" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                    </a>
+                `;
+            } else {
+                // زر تسجيل الدخول
+                loginButton.innerHTML = `
+                    <a class="nav-link" href="login.html">
+                        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                    </a>
+                `;
+            }
+            
+            nav.appendChild(loginButton);
+        }
+        
+        // عرض خيار تسجيل الدخول
+        function showLoginOption() {
+            const modal = document.createElement('div');
+            modal.innerHTML = `
+                <div class="modal fade" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">تسجيل الدخول</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <i class="fas fa-tooth fa-3x text-success mb-3"></i>
+                                <p>لتجربة النظام الكامل مع جميع المميزات، يرجى تسجيل الدخول</p>
+                                <p class="text-muted small">يمكن للضيوف تصفح الموقع، لكن بعض المميزات متاحة للأعضاء المسجلين فقط</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">تصفح كضيف</button>
+                                <button type="button" class="btn btn-primary" onclick="window.location.href='login.html'">
+                                    <i class="fas fa-sign-in-alt me-1"></i>تسجيل الدخول
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            const bsModal = new bootstrap.Modal(modal.querySelector('.modal'));
+            bsModal.show();
+            
+            modal.querySelector('.modal').addEventListener('hidden.bs.modal', () => {
+                modal.querySelector('.modal').remove();
+            });
+        }
+        
+        // تسجيل الخروج
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.removeItem('clinicSession');
+                sessionStorage.removeItem('clinicSession');
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // دالة تسجيل الدخول (للأزرار)
+        function goToLogin() {
+            window.location.href = 'login.html';
+        }
         
         // تحديث الإحصائيات المتقدمة
         function updateAdvancedStats() {

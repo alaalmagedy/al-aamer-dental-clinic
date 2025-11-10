@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - عيادة العامر للأسنان</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #2E7D32, #1B5E20);
+            min-height: 100vh;
+        }
+        
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, #2E7D32, #1B5E20);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .login-body {
+            padding: 2rem;
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            border-color: #2E7D32;
+            box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #2E7D32, #1B5E20);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 125, 50, 0.3);
+        }
+        
+        .user-type-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .user-type-btn {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .user-type-btn.active {
+            border-color: #2E7D32;
+            background: #f8f9fa;
+            color: #2E7D32;
+        }
+        
+        .user-type-btn i {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-info {
+            text-align: center;
+            margin-top: 2rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .demo-accounts {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .demo-account {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .demo-account:last-child {
+            margin-bottom: 0;
+        }
+        
+        .btn-demo {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-tooth fa-3x mb-3"></i>
+                <h3>عيادة العامر للأسنان</h3>
+                <p class="mb-0">نظام إدارة العيادة المتطور</p>
+            </div>
+            
+            <div class="login-body">
+                <form id="loginForm">
+                    <!-- اختيار نوع المستخدم -->
+                    <div class="user-type-selector">
+                        <div class="user-type-btn active" data-type="patient">
+                            <i class="fas fa-user"></i>
+                            <div>مريض</div>
+                        </div>
+                        <div class="user-type-btn" data-type="admin">
+                            <i class="fas fa-user-shield"></i>
+                            <div>إداري</div>
+                        </div>
+                        <div class="user-type-btn" data-type="doctor">
+                            <i class="fas fa-user-md"></i>
+                            <div>طبيب</div>
+                        </div>
+                        <div class="user-type-btn" data-type="cashier">
+                            <i class="fas fa-cash-register"></i>
+                            <div>كاشير</div>
+                        </div>
+                    </div>
+                    
+                    <!-- معلومات تسجيل الدخول -->
+                    <div class="mb-3">
+                        <label for="username" class="form-label">اسم المستخدم</label>
+                        <input type="text" class="form-control" id="username" placeholder="أدخل اسم المستخدم">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">كلمة المرور</label>
+                        <input type="password" class="form-control" id="password" placeholder="أدخل كلمة المرور">
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">
+                            تذكر تسجيل الدخول
+                        </label>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-login">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            تسجيل الدخول
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- حسابات تجريبية -->
+                <div class="demo-accounts">
+                    <h6 class="mb-3">
+                        <i class="fas fa-flask me-2"></i>
+                        حسابات تجريبية للاختبار:
+                    </h6>
+                    
+                    <div class="demo-account">
+                        <div>
+                            <strong>مريض:</strong> patient / 123456
+                        </div>
+                        <button class="btn-demo" onclick="fillDemo('patient', 'patient', '123456')">
+                            تجريبي
+                        </button>
+                    </div>
+                    
+                    <div class="demo-account">
+                        <div>
+                            <strong>إداري:</strong> admin / admin123
+                        </div>
+                        <button class="btn-demo" onclick="fillDemo('admin', 'admin', 'admin123')">
+                            تجريبي
+                        </button>
+                    </div>
+                    
+                    <div class="demo-account">
+                        <div>
+                            <strong>طبيب:</strong> doctor / doc123
+                        </div>
+                        <button class="btn-demo" onclick="fillDemo('doctor', 'doctor', 'doc123')">
+                            تجريبي
+                        </button>
+                    </div>
+                    
+                    <div class="demo-account">
+                        <div>
+                            <strong>كاشير:</strong> cashier / cash123
+                        </div>
+                        <button class="btn-demo" onclick="fillDemo('cashier', 'cashier', 'cash123')">
+                            تجريبي
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="footer-info">
+                    <p class="mb-2">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        محمي بتشفير متقدم
+                    </p>
+                    <p class="mb-0">
+                        تطوير: Mr Technology Solutions
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // تعريف أنواع المستخدمين
+        const userTypes = {
+            patient: {
+                name: 'مريض',
+                icon: 'fas fa-user',
+                color: '#28a745',
+                description: 'حجز المواعيد وإدارة البيانات الشخصية'
+            },
+            admin: {
+                name: 'إداري',
+                icon: 'fas fa-user-shield',
+                color: '#007bff',
+                description: 'إدارة شاملة للعيادة والموظفين'
+            },
+            doctor: {
+                name: 'طبيب',
+                icon: 'fas fa-user-md',
+                color: '#dc3545',
+                description: 'إدارة المواعيد والملفات الطبية'
+            },
+            cashier: {
+                name: 'كاشير',
+                icon: 'fas fa-cash-register',
+                color: '#fd7e14',
+                description: 'إدارة المدفوعات والفواتير'
+            }
+        };
+        
+        // اختيار نوع المستخدم
+        document.querySelectorAll('.user-type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // إزالة التحديد من جميع الأزرار
+                document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
+                
+                // تحديد الزر الحالي
+                this.classList.add('active');
+                
+                // حفظ نوع المستخدم
+                selectedUserType = this.dataset.type;
+                
+                // تحديث تسمية الأزرار
+                updateButtonLabels();
+            });
+        });
+        
+        let selectedUserType = 'patient';
+        let userSession = null;
+        
+        function updateButtonLabels() {
+            const type = userTypes[selectedUserType];
+            console.log(`تم تحديد نوع المستخدم: ${type.name}`);
+        }
+        
+        // ملء البيانات التجريبية
+        function fillDemo(type, username, password) {
+            selectedUserType = type;
+            
+            // تحديد نوع المستخدم في الواجهة
+            document.querySelectorAll('.user-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.type === type) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // ملء البيانات
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+        }
+        
+        // معالجة تسجيل الدخول
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            if (!username || !password) {
+                alert('يرجى ملء جميع الحقول');
+                return;
+            }
+            
+            // محاكاة التحقق من البيانات
+            if (validateLogin(username, password)) {
+                // إنشاء جلسة المستخدم
+                userSession = {
+                    type: selectedUserType,
+                    username: username,
+                    loginTime: new Date().toISOString(),
+                    rememberMe: rememberMe
+                };
+                
+                // حفظ الجلسة
+                if (rememberMe) {
+                    localStorage.setItem('clinicSession', JSON.stringify(userSession));
+                } else {
+                    sessionStorage.setItem('clinicSession', JSON.stringify(userSession));
+                }
+                
+                // عرض رسالة نجاح
+                showSuccessMessage();
+                
+                // الانتقال للواجهة المناسبة
+                setTimeout(() => {
+                    redirectToDashboard();
+                }, 1500);
+                
+            } else {
+                showErrorMessage();
+            }
+        });
+        
+        // التحقق من صحة بيانات الدخول
+        function validateLogin(username, password) {
+            const validAccounts = {
+                'patient': { 'patient': '123456', 'ahmed': '123456', 'sara': '123456' },
+                'admin': { 'admin': 'admin123', 'manager': 'admin123' },
+                'doctor': { 'doctor': 'doc123', 'dr.aamer': 'doc123', 'dr.fatima': 'doc123' },
+                'cashier': { 'cashier': 'cash123', 'finance': 'cash123' }
+            };
+            
+            return validAccounts[selectedUserType] && validAccounts[selectedUserType][username] === password;
+        }
+        
+        // عرض رسالة نجاح
+        function showSuccessMessage() {
+            const type = userTypes[selectedUserType];
+            const message = `
+                <div class="alert alert-success text-center">
+                    <i class="${type.icon} me-2"></i>
+                    مرحباً! جاري الانتقال إلى واجهة ${type.name}...
+                </div>
+            `;
+            showMessage(message, 'success');
+        }
+        
+        // عرض رسالة خطأ
+        function showErrorMessage() {
+            const message = `
+                <div class="alert alert-danger text-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    بيانات الدخول غير صحيحة
+                </div>
+            `;
+            showMessage(message, 'danger');
+        }
+        
+        // عرض رسالة
+        function showMessage(message, type) {
+            // إزالة الرسائل السابقة
+            const existingAlert = document.querySelector('.alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            // إضافة الرسالة
+            const loginBody = document.querySelector('.login-body');
+            const messageDiv = document.createElement('div');
+            messageDiv.innerHTML = message;
+            loginBody.insertBefore(messageDiv.firstChild, document.getElementById('loginForm'));
+            
+            // إزالة الرسالة بعد 3 ثوان
+            setTimeout(() => {
+                const alert = document.querySelector('.alert');
+                if (alert) {
+                    alert.remove();
+                }
+            }, 3000);
+        }
+        
+        // الانتقال للوحة التحكم
+        function redirectToDashboard() {
+            const type = userTypes[selectedUserType];
+            const targetPages = {
+                patient: 'patient-dashboard.html',
+                admin: 'admin-dashboard.html', 
+                doctor: 'doctor-dashboard.html',
+                cashier: 'cashier-dashboard.html'
+            };
+            
+            // في النسخة الحالية سنعود للصفحة الرئيسية مع تحديد نوع المستخدم
+            window.location.href = `index.html?user=${selectedUserType}&session=${Date.now()}`;
+        }
+        
+        // فحص الجلسة المحفوظة
+        window.addEventListener('load', function() {
+            const savedSession = localStorage.getItem('clinicSession') || sessionStorage.getItem('clinicSession');
+            if (savedSession) {
+                try {
+                    const session = JSON.parse(savedSession);
+                    // يمكن إضافة إعادة توجيه تلقائية هنا
+                    console.log('جلسة محفوظة:', session);
+                } catch (e) {
+                    console.log('خطأ في الجلسة المحفوظة');
+                }
+            }
+        });
+        
+        // تهيئة الواجهة
+        document.addEventListener('DOMContentLoaded', function() {
+            // إضافة تأثيرات بصرية
+            document.querySelectorAll('.user-type-btn').forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    if (!this.classList.contains('active')) {
+                        this.style.transform = 'translateY(-2px)';
+                    }
+                });
+                
+                btn.addEventListener('mouseleave', function() {
+                    if (!this.classList.contains('active')) {
+                        this.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+            
+            // إضافة تأثيرات للأزرار
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                
+                btn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

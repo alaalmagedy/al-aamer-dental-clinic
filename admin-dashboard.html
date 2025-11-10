@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الإدارة - عيادة العامر للأسنان</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+        }
+        
+        .navbar-admin {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+        }
+        
+        .admin-sidebar {
+            background: #2c3e50;
+            min-height: calc(100vh - 76px);
+            padding: 0;
+        }
+        
+        .sidebar-item {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: #ecf0f1;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: right;
+        }
+        
+        .sidebar-item:hover, .sidebar-item.active {
+            background: #34495e;
+            color: #3498db;
+        }
+        
+        .admin-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .admin-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            height: 300px;
+        }
+        
+        .quick-action {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+            color: white;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .alert-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-warning { background: #fff3cd; color: #856404; }
+        .alert-danger { background: #f8d7da; color: #721c24; }
+        .alert-info { background: #cce5ff; color: #004085; }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-admin">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-tooth me-2"></i>
+                لوحة تحكم الإدارة
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                        <div class="admin-avatar me-2">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold">مدير النظام</div>
+                            <small class="opacity-75">إداري</small>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" onclick="editProfile()">
+                            <i class="fas fa-user-edit me-2"></i>الملف الشخصي
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="systemSettings()">
+                            <i class="fas fa-cogs me-2"></i>إعدادات النظام
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="backupData()">
+                            <i class="fas fa-download me-2"></i>نسخة احتياطية
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="login.html" onclick="logout()">
+                            <i class="fas fa-sign-out-alt me-2"></i>تسجيل الخروج
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- الشريط الجانبي -->
+            <div class="col-lg-2 col-md-3 p-0">
+                <div class="admin-sidebar">
+                    <div class="p-3">
+                        <h6 class="text-white mb-3">
+                            <i class="fas fa-bars me-2"></i>
+                            القوائم
+                        </h6>
+                    </div>
+                    
+                    <nav>
+                        <button class="sidebar-item active" onclick="showSection('dashboard')">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            لوحة التحكم
+                        </button>
+                        <button class="sidebar-item" onclick="showSection('patients')">
+                            <i class="fas fa-users me-2"></i>
+                            إدارة المرضى
+                        </button>
+                        <button class="sidebar-item" onclick="showSection('appointments')">
+                            <i class="fas fa-calendar-check me-2"></i>
+                            إدارة المواعيد
+                        </button>
+                        <button class="sidebar-item" onclick="showSection('doctors')">
+                            <i class="fas fa-user-md me-2"></i>
+                            إدارة الأطباء
+                        </button>
+                        <button class="sidebar-item" onclick="showSection('staff')">
+                            <i class="fas fa-user-tie me-2"></i>
+                            إدارة الموظفين
+                        </button>
+                        <button class="sidebar-item" onclick="showSection('finance')">
+                            <i class="fas fa-chart-line me-2"></i>
+                            الإدارة المالية
+                        </button>
+                        <button class="sidebar-item" onclick="showSection('reports')">
+                            <i class="fas fa-file-alt me-2"></i>
+                            التقارير
+                        </button>
+                        <button class="sidebar-item" onclick="showSection('inventory')">
+                            <i class="fas fa-boxes me-2"></i>
+                            المخزون
+                        </button>
+                        <button class="sidebar-item" onclick="showSection('settings')">
+                            <i class="fas fa-cogs me-2"></i>
+                            الإعدادات
+                        </button>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- المحتوى الرئيسي -->
+            <div class="col-lg-10 col-md-9">
+                <div class="p-4">
+                    <!-- الإحصائيات السريعة -->
+                    <div class="row mb-4">
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="stat-card">
+                                <i class="fas fa-users fa-2x mb-2"></i>
+                                <h3>1,247</h3>
+                                <p class="mb-0">إجمالي المرضى</p>
+                                <small>+12% هذا الشهر</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                                <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                                <h3>89</h3>
+                                <p class="mb-0">مواعيد اليوم</p>
+                                <small>نسبة الحضور 94%</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="stat-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                                <i class="fas fa-dollar-sign fa-2x mb-2"></i>
+                                <h3>$45,230</h3>
+                                <p class="mb-0">إيرادات الشهر</p>
+                                <small>+8% عن الشهر الماضي</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="stat-card" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                                <i class="fas fa-chart-line fa-2x mb-2"></i>
+                                <h3>98.5%</h3>
+                                <p class="mb-0">رضا المرضى</p>
+                                <small>تقييم ممتاز</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- الإجراءات السريعة -->
+                    <div class="admin-card p-4 mb-4">
+                        <h5 class="fw-bold mb-3">
+                            <i class="fas fa-bolt me-2 text-danger"></i>
+                            الإجراءات السريعة
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-3 mb-2">
+                                <button class="btn quick-action w-100" onclick="addPatient()">
+                                    <i class="fas fa-user-plus me-1"></i>
+                                    إضافة مريض
+                                </button>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button class="btn quick-action w-100" onclick="createAppointment()">
+                                    <i class="fas fa-calendar-plus me-1"></i>
+                                    حجز موعد
+                                </button>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button class="btn quick-action w-100" onclick="generateReport()">
+                                    <i class="fas fa-file-export me-1"></i>
+                                    تقرير سريع
+                                </button>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button class="btn quick-action w-100" onclick="backupSystem()">
+                                    <i class="fas fa-database me-1"></i>
+                                    نسخة احتياطية
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- إشعار المواعيد اليوم -->
+                        <div class="col-lg-8 mb-4">
+                            <div class="admin-card p-4">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-calendar-day me-2 text-primary"></i>
+                                    مواعيد اليوم
+                                </h5>
+                                
+                                <div class="data-table">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>الوقت</th>
+                                                <th>المريض</th>
+                                                <th>الطبيب</th>
+                                                <th>الخدمة</th>
+                                                <th>الحالة</th>
+                                                <th>الإجراءات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>09:00</td>
+                                                <td>أحمد محمد</td>
+                                                <td>د. أحمد العامر</td>
+                                                <td>فحص شامل</td>
+                                                <td><span class="alert-badge alert-success">مؤكد</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="viewDetails()">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-success" onclick="editAppointment()">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>10:30</td>
+                                                <td>فاطمة علي</td>
+                                                <td>د. فاطمة العيادي</td>
+                                                <td>تنظيف أسنان</td>
+                                                <td><span class="alert-badge alert-warning">في الانتظار</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="viewDetails()">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-success" onclick="editAppointment()">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>11:00</td>
+                                                <td>محمد سالم</td>
+                                                <td>د. أحمد العامر</td>
+                                                <td>حشو أسنان</td>
+                                                <td><span class="alert-badge alert-success">مؤكد</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="viewDetails()">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-success" onclick="editAppointment()">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>14:00</td>
+                                                <td>سارة أحمد</td>
+                                                <td>د. محمد العبيدي</td>
+                                                <td>علاج جذور</td>
+                                                <td><span class="alert-badge alert-danger">متأخر</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="viewDetails()">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-success" onclick="editAppointment()">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- التنبيهات -->
+                        <div class="col-lg-4 mb-4">
+                            <div class="admin-card p-4">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-bell me-2 text-warning"></i>
+                                    التنبيهات والإشعارات
+                                </h5>
+                                
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>3 مرضى</strong> لم يؤكدوا مواعيدهم بعد
+                                </div>
+                                
+                                <div class="alert alert-warning" role="alert">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>نقص في المخزون:</strong> مواد التخدير
+                                </div>
+                                
+                                <div class="alert alert-success" role="alert">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    تم حفظ <strong>النسخة الاحتياطية</strong> بنجاح
+                                </div>
+                                
+                                <div class="alert alert-danger" role="alert">
+                                    <i class="fas fa-times-circle me-2"></i>
+                                    <strong>خطأ في الطباعة:</strong> راجع إعدادات الطابعة
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- إحصائيات إضافية -->
+                    <div class="row">
+                        <div class="col-lg-6 mb-4">
+                            <div class="admin-card p-4">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-chart-pie me-2 text-success"></i>
+                                    إحصائيات الأطباء
+                                </h5>
+                                <div class="chart-container">
+                                    <canvas id="doctorsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6 mb-4">
+                            <div class="admin-card p-4">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-chart-bar me-2 text-info"></i>
+                                    إحصائيات شهرية
+                                </h5>
+                                <div class="chart-container">
+                                    <canvas id="monthlyChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // دوال الإدارة
+        function showSection(section) {
+            // تحديث التنقل النشط
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // عرض المحتوى المناسب
+            console.log(`عرض قسم: ${section}`);
+        }
+        
+        function addPatient() {
+            showModal('إضافة مريض جديد', 'form-content-patient');
+        }
+        
+        function createAppointment() {
+            showModal('حجز موعد جديد', 'form-content-appointment');
+        }
+        
+        function generateReport() {
+            showModal('إنشاء تقرير', 'form-content-report');
+        }
+        
+        function backupSystem() {
+            if (confirm('هل تريد إنشاء نسخة احتياطية من النظام؟')) {
+                alert('جاري إنشاء النسخة الاحتياطية...');
+            }
+        }
+        
+        function editProfile() {
+            alert('فتح نموذج تعديل الملف الشخصي');
+        }
+        
+        function systemSettings() {
+            alert('فتح إعدادات النظام');
+        }
+        
+        function backupData() {
+            alert('جاري تحضير البيانات للنسخ الاحتياطي...');
+        }
+        
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.removeItem('clinicSession');
+                sessionStorage.removeItem('clinicSession');
+                window.location.href = 'login.html';
+            }
+        }
+        
+        function viewDetails() {
+            alert('عرض تفاصيل الموعد');
+        }
+        
+        function editAppointment() {
+            alert('تعديل الموعد');
+        }
+        
+        // عرض النافذة المنبثقة
+        function showModal(title, contentId) {
+            const modal = `
+                <div class="modal fade" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">${title}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>هذه نسخة تجريبية من نظام ${title}.</p>
+                                <p>في النسخة الكاملة سيتم فتح النماذج التفاعلية.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modal);
+            const bsModal = new bootstrap.Modal(document.querySelector('.modal'));
+            bsModal.show();
+            
+            document.querySelector('.modal').addEventListener('hidden.bs.modal', () => {
+                document.querySelector('.modal').remove();
+            });
+        }
+        
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            // إضافة تأثيرات بصرية
+            document.querySelectorAll('.admin-card, .stat-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // تحديث الوقت الفعلي
+            updateRealTimeData();
+            setInterval(updateRealTimeData, 30000);
+        });
+        
+        function updateRealTimeData() {
+            // محاكاة تحديث البيانات في الوقت الفعلي
+            console.log('تحديث البيانات في الوقت الفعلي...');
+        }
+    </script>
+</body>
+</html>
