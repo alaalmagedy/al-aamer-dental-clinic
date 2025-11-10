@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الإدارة - عيادة العامر للأسنان</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    
+    <style>
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            min-height: 100vh;
+            position: fixed;
+            width: 280px;
+            right: 0;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .main-content {
+            margin-right: 280px;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(45deg, #3498db, #2980b9) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: none;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            border-radius: 8px;
+            margin: 0.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.1) !important;
+            color: white !important;
+            transform: translateX(-5px);
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+
+        .user-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+        }
+
+        .activity-item {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            border-right: 4px solid #3498db;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .alert-custom {
+            border: none;
+            border-radius: 12px;
+            border-right: 4px solid;
+        }
+
+        .alert-info { border-right-color: #3498db; }
+        .alert-success { border-right-color: #27ae60; }
+        .alert-warning { border-right-color: #f39c12; }
+        .alert-danger { border-right-color: #e74c3c; }
+
+        .btn-custom {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            border: none;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background: linear-gradient(45deg, #2980b9, #1f4e79);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .toggle-sidebar {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .toggle-sidebar {
+                display: block;
+            }
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="p-4">
+            <div class="text-center mb-4">
+                <div class="user-avatar mx-auto mb-2" id="currentUserAvatar">👨‍💼</div>
+                <h5 id="currentUserName">مدير النظام</h5>
+                <small class="text-muted" id="currentUserRole">Admin</small>
+            </div>
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#dashboard" data-bs-toggle="tab">
+                        <i class="fas fa-tachometer-alt me-2"></i>لوحة التحكم
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#users" data-bs-toggle="tab">
+                        <i class="fas fa-users me-2"></i>إدارة المستخدمين
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#patients" data-bs-toggle="tab">
+                        <i class="fas fa-user-injured me-2"></i>إدارة المرضى
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#appointments" data-bs-toggle="tab">
+                        <i class="fas fa-calendar-check me-2"></i>إدارة المواعيد
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#financial" data-bs-toggle="tab">
+                        <i class="fas fa-chart-line me-2"></i>التقارير المالية
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#settings" data-bs-toggle="tab">
+                        <i class="fas fa-cog me-2"></i>إعدادات النظام
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <a class="nav-link text-warning" href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-2"></i>تسجيل الخروج
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <button class="btn btn-outline-light toggle-sidebar me-2" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <span class="navbar-brand mb-0 h1">
+                    <i class="fas fa-hospital-user me-2"></i>عيادة العامر للأسنان
+                </span>
+                
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-bell me-1"></i>
+                            <span class="badge bg-danger">3</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">موعد جديد في الساعة 10:00</a></li>
+                            <li><a class="dropdown-item" href="#">دفعة جديدة من 500 ريال</a></li>
+                            <li><a class="dropdown-item" href="#">تذكير: صيانة النظام غداً</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="container-fluid p-4">
+            <div class="tab-content">
+                <!-- Dashboard Tab -->
+                <div class="tab-pane fade show active" id="dashboard">
+                    <h2 class="section-title">
+                        <i class="fas fa-tachometer-alt me-2"></i>لوحة التحكم الرئيسية
+                    </h2>
+                    
+                    <!-- Statistics -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon" style="background: linear-gradient(45deg, #3498db, #2980b9);">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h4 class="mb-0" id="totalUsers">5</h4>
+                                        <small class="text-muted">إجمالي المستخدمين</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon" style="background: linear-gradient(45deg, #27ae60, #2ecc71);">
+                                        <i class="fas fa-user-injured"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h4 class="mb-0" id="totalPatients">1</h4>
+                                        <small class="text-muted">إجمالي المرضى</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon" style="background: linear-gradient(45deg, #f39c12, #e67e22);">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h4 class="mb-0" id="todayAppointments">0</h4>
+                                        <small class="text-muted">مواعيد اليوم</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon" style="background: linear-gradient(45deg, #9b59b6, #8e44ad);">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h4 class="mb-0" id="monthlyRevenue">0 ريال</h4>
+                                        <small class="text-muted">إيرادات الشهر</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h4 class="mb-3">الإجراءات السريعة</h4>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="quick-action" onclick="addNewUser()">
+                                <i class="fas fa-user-plus fa-2x mb-2"></i>
+                                <h6>إضافة مستخدم</h6>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="quick-action" onclick="addNewPatient()">
+                                <i class="fas fa-user-injured fa-2x mb-2"></i>
+                                <h6>إضافة مريض</h6>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="quick-action" onclick="generateReport()">
+                                <i class="fas fa-file-pdf fa-2x mb-2"></i>
+                                <h6>إنشاء تقرير</h6>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="quick-action" onclick="systemBackup()">
+                                <i class="fas fa-download fa-2x mb-2"></i>
+                                <h6>نسخة احتياطية</h6>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts -->
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="chart-container">
+                                <h5>إحصائيات الإيرادات الشهرية</h5>
+                                <canvas id="revenueChart" height="100"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="chart-container">
+                                <h5>توزيع المستخدمين</h5>
+                                <canvas id="usersChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Management Tab -->
+                <div class="tab-pane fade" id="users">
+                    <h2 class="section-title">
+                        <i class="fas fa-users me-2"></i>إدارة المستخدمين
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="userSearch" placeholder="البحث في المستخدمين...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-custom" onclick="addNewUser()">
+                                <i class="fas fa-plus me-2"></i>إضافة مستخدم جديد
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="usersList">
+                        <!-- سيتم ملء المحتوى بواسطة JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Patients Tab -->
+                <div class="tab-pane fade" id="patients">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-injured me-2"></i>إدارة المرضى
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="patientSearch" placeholder="البحث في المرضى...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-custom" onclick="addNewPatient()">
+                                <i class="fas fa-plus me-2"></i>إضافة مريض جديد
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="patientsTable">
+                            <thead>
+                                <tr>
+                                    <th>رقم المريض</th>
+                                    <th>الاسم</th>
+                                    <th>الهاتف</th>
+                                    <th>آخر زيارة</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>P-2025-001</td>
+                                    <td>علي محمد الأحمد</td>
+                                    <td>00967-777-123460</td>
+                                    <td>2025-11-05</td>
+                                    <td><span class="badge bg-success">نشط</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Appointments Tab -->
+                <div class="tab-pane fade" id="appointments">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-check me-2"></i>إدارة المواعيد
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <input type="date" class="form-control" id="appointmentDate">
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="appointmentStatus">
+                                <option value="">جميع الحالات</option>
+                                <option value="scheduled">مجدول</option>
+                                <option value="completed">مكتمل</option>
+                                <option value="cancelled">ملغي</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-custom" onclick="scheduleAppointment()">
+                                <i class="fas fa-plus me-2"></i>جدولة موعد جديد
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="appointmentsCalendar">
+                        <!-- سيتم إضافة التقويم هنا -->
+                    </div>
+                </div>
+
+                <!-- Financial Reports Tab -->
+                <div class="tab-pane fade" id="financial">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-line me-2"></i>التقارير المالية
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stat-card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-primary" id="totalRevenue">0 ريال</h3>
+                                    <p class="mb-0">إجمالي الإيرادات</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-success" id="monthlyRevenue2">0 ريال</h3>
+                                    <p class="mb-0">إيرادات الشهر</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-warning" id="pendingPayments">0 ريال</h3>
+                                    <p class="mb-0">المدفوعات المعلقة</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-danger" id="expenses">0 ريال</h3>
+                                    <p class="mb-0">إجمالي المصروفات</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h5>تحليل الإيرادات الشهرية</h5>
+                        <canvas id="financialChart" height="100"></canvas>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="tab-pane fade" id="settings">
+                    <h2 class="section-title">
+                        <i class="fas fa-cog me-2"></i>إعدادات النظام
+                    </h2>
+                    
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-shield-alt me-2"></i>إعدادات الأمان</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">مدة انتهاء الجلسة (بالدقائق)</label>
+                                        <input type="number" class="form-control" id="sessionTimeout" value="30" min="5" max="120">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">عدد محاولات تسجيل الدخول المسموحة</label>
+                                        <input type="number" class="form-control" id="maxLoginAttempts" value="3" min="1" max="10">
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="enableEncryption" checked>
+                                        <label class="form-check-label">تفعيل تشفير البيانات</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-bell me-2"></i>إعدادات الإشعارات</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="emailNotifications" checked>
+                                        <label class="form-check-label">تفعيل إشعارات البريد الإلكتروني</label>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="smsNotifications">
+                                        <label class="form-check-label">تفعيل إشعارات SMS</label>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="desktopNotifications" checked>
+                                        <label class="form-check-label">تفعيل إشعارات سطح المكتب</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button class="btn btn-custom" onclick="saveSettings()">
+                                    <i class="fas fa-save me-2"></i>حفظ الإعدادات
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="resetSettings()">
+                                    <i class="fas fa-undo me-2"></i>استعادة الافتراضي
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    
+    <!-- نظام المصادقة المتقدم -->
+    <script src="advanced_auth_system.js"></script>
+    
+    <script>
+        let currentUser = null;
+        let authSystem = null;
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            // فحص تسجيل الدخول
+            authSystem = new AdvancedAuthSystem();
+            if (!authSystem.currentUser || authSystem.currentUser.role !== 'admin') {
+                window.location.href = 'advanced_login.html';
+                return;
+            }
+
+            currentUser = authSystem.currentUser;
+            updateUserInfo();
+            loadDashboardData();
+            initializeCharts();
+            loadUsersList();
+            
+            // تفعيل DataTables
+            $('#patientsTable').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/ar.json'
+                }
+            });
+        });
+
+        // تحديث معلومات المستخدم
+        function updateUserInfo() {
+            document.getElementById('currentUserName').textContent = currentUser.fullName;
+            document.getElementById('currentUserRole').textContent = getRoleInArabic(currentUser.role);
+            document.getElementById('currentUserAvatar').textContent = currentUser.avatar || '👨‍💼';
+        }
+
+        // تحويل نوع المستخدم للعربية
+        function getRoleInArabic(role) {
+            const roles = {
+                admin: 'مدير النظام',
+                doctor: 'طبيب',
+                receptionist: 'موظف استقبال',
+                cashier: 'كاشير',
+                patient: 'مريض'
+            };
+            return roles[role] || role;
+        }
+
+        // تحميل بيانات لوحة التحكم
+        function loadDashboardData() {
+            const stats = authSystem.getSystemStats();
+            
+            document.getElementById('totalUsers').textContent = stats.totalUsers;
+            document.getElementById('totalPatients').textContent = stats.usersByRole.patient;
+            document.getElementById('todayAppointments').textContent = '2'; // بيانات تجريبية
+            document.getElementById('monthlyRevenue').textContent = '15,000 ريال';
+            
+            // تحديث التقارير المالية
+            document.getElementById('totalRevenue').textContent = '45,000 ريال';
+            document.getElementById('monthlyRevenue2').textContent = '15,000 ريال';
+            document.getElementById('pendingPayments').textContent = '3,500 ريال';
+            document.getElementById('expenses').textContent = '8,200 ريال';
+        }
+
+        // تهيئة الرسوم البيانية
+        function initializeCharts() {
+            // رسم بياني للإيرادات
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+                    datasets: [{
+                        label: 'الإيرادات',
+                        data: [12000, 15000, 18000, 16000, 22000, 15000],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // رسم بياني دائري للمستخدمين
+            const usersCtx = document.getElementById('usersChart').getContext('2d');
+            const stats = authSystem.getSystemStats();
+            new Chart(usersCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['إدارة', 'أطباء', 'استقبال', 'كاشير', 'مرضى'],
+                    datasets: [{
+                        data: [
+                            stats.usersByRole.admin,
+                            stats.usersByRole.doctor,
+                            stats.usersByRole.receptionist,
+                            stats.usersByRole.cashier,
+                            stats.usersByRole.patient
+                        ],
+                        backgroundColor: [
+                            '#e74c3c',
+                            '#27ae60',
+                            '#f39c12',
+                            '#9b59b6',
+                            '#3498db'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+
+            // رسم بياني مالي
+            const financialCtx = document.getElementById('financialChart').getContext('2d');
+            new Chart(financialCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+                    datasets: [{
+                        label: 'الإيرادات',
+                        data: [12000, 15000, 18000, 16000, 22000, 15000],
+                        backgroundColor: '#27ae60'
+                    }, {
+                        label: 'المصروفات',
+                        data: [8000, 9000, 7500, 8200, 11000, 8200],
+                        backgroundColor: '#e74c3c'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // تحميل قائمة المستخدمين
+        function loadUsersList() {
+            const users = authSystem.getAllUsers();
+            const usersList = document.getElementById('usersList');
+            
+            let html = '';
+            users.forEach(user => {
+                html += `
+                    <div class="user-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-2 text-center">
+                                <div class="user-avatar mx-auto">${user.avatar || '👤'}</div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="mb-1">${user.fullName}</h6>
+                                <small class="text-muted">@${user.username}</small>
+                                <br>
+                                <span class="badge bg-primary">${getRoleInArabic(user.role)}</span>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">${user.email || 'غير محدد'}</small><br>
+                                <small class="text-muted">${user.phone || 'غير محدد'}</small>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="status-badge badge bg-${user.isActive ? 'success' : 'danger'}">
+                                    ${user.isActive ? 'نشط' : 'غير نشط'}
+                                </span>
+                            </div>
+                            <div class="col-md-1 text-end">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" onclick="editUser('${user.username}')">
+                                            <i class="fas fa-edit me-2"></i>تعديل
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="toggleUserStatus('${user.username}')">
+                                            <i class="fas fa-${user.isActive ? 'ban' : 'check'} me-2"></i>
+                                            ${user.isActive ? 'إلغاء تفعيل' : 'تفعيل'}
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteUser('${user.username}')">
+                                            <i class="fas fa-trash me-2"></i>حذف
+                                        </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            usersList.innerHTML = html;
+        }
+
+        // إدارة الشريط الجانبي
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                authSystem.logout();
+                window.location.href = 'advanced_login.html';
+            }
+        }
+
+        // دوال إدارة المستخدمين
+        function addNewUser() {
+            alert('سيتم فتح نموذج إضافة مستخدم جديد');
+        }
+
+        function editUser(username) {
+            alert(`سيتم فتح نموذج تعديل المستخدم: ${username}`);
+        }
+
+        function toggleUserStatus(username) {
+            const user = authSystem.users[username];
+            if (user) {
+                const newStatus = !user.isActive;
+                authSystem.updateUser(username, { isActive: newStatus });
+                loadUsersList();
+                showAlert(`تم ${newStatus ? 'تفعيل' : 'إلغاء تفعيل'} المستخدم بنجاح`, 'success');
+            }
+        }
+
+        function deleteUser(username) {
+            if (confirm(`هل أنت متأكد من حذف المستخدم: ${username}؟`)) {
+                try {
+                    authSystem.deleteUser(username);
+                    loadUsersList();
+                    showAlert('تم حذف المستخدم بنجاح', 'success');
+                } catch (error) {
+                    showAlert(error.message, 'danger');
+                }
+            }
+        }
+
+        // دوال أخرى
+        function addNewPatient() {
+            alert('سيتم فتح نموذج إضافة مريض جديد');
+        }
+
+        function generateReport() {
+            alert('سيتم إنشاء التقرير...');
+        }
+
+        function systemBackup() {
+            alert('سيتم إنشاء نسخة احتياطية من النظام...');
+        }
+
+        function scheduleAppointment() {
+            alert('سيتم فتح نافذة جدولة موعد جديد');
+        }
+
+        function saveSettings() {
+            showAlert('تم حفظ الإعدادات بنجاح', 'success');
+        }
+
+        function resetSettings() {
+            if (confirm('هل تريد استعادة الإعدادات الافتراضية؟')) {
+                showAlert('تم استعادة الإعدادات الافتراضية', 'info');
+            }
+        }
+
+        // عرض التنبيهات
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // البحث في المستخدمين
+        document.getElementById('userSearch').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const users = authSystem.searchUsers(query);
+            
+            // تطبيق البحث على واجهة المستخدم
+            // يمكن تحسين هذا لاحقاً
+        });
+
+        // البحث في المرضى
+        document.getElementById('patientSearch').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            // تطبيق البحث على جدول المرضى
+        });
+    </script>
+</body>
+</html>

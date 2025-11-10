@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام نقطة البيع - عيادة العامر للأسنان</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            min-height: 100vh;
+            position: fixed;
+            width: 280px;
+            right: 0;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .main-content {
+            margin-right: 280px;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .pos-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .calculator {
+            background: #2c3e50;
+            border-radius: 15px;
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .calc-display {
+            background: #34495e;
+            color: #2ecc71;
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calc-btn {
+            background: #34495e;
+            border: none;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .calc-btn:hover {
+            background: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .calc-btn.operator {
+            background: #e74c3c;
+        }
+
+        .calc-btn.operator:hover {
+            background: #c0392b;
+        }
+
+        .calc-btn.equals {
+            background: #27ae60;
+        }
+
+        .calc-btn.equals:hover {
+            background: #229954;
+        }
+
+        .payment-methods {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .payment-option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .payment-option:hover {
+            border-color: #9b59b6;
+            background: rgba(155, 89, 182, 0.05);
+        }
+
+        .payment-option.selected {
+            border-color: #9b59b6;
+            background: rgba(155, 89, 182, 0.1);
+        }
+
+        .transaction-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-right: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .transaction-paid { border-right-color: #27ae60; }
+        .transaction-pending { border-right-color: #f39c12; }
+        .transaction-partial { border-right-color: #3498db; }
+        .transaction-overdue { border-right-color: #e74c3c; }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: none;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            border-radius: 8px;
+            margin: 0.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.1) !important;
+            color: white !important;
+            transform: translateX(-5px);
+        }
+
+        .section-title {
+            color: #9b59b6;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #9b59b6;
+            padding-bottom: 0.5rem;
+        }
+
+        .quick-action {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            cursor: pointer;
+            height: 100%;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.4);
+            color: white;
+        }
+
+        .alert-custom {
+            border: none;
+            border-radius: 12px;
+            border-right: 4px solid;
+        }
+
+        .alert-info { border-right-color: #3498db; }
+        .alert-success { border-right-color: #27ae60; }
+        .alert-warning { border-right-color: #f39c12; }
+        .alert-danger { border-right-color: #e74c3c; }
+
+        .btn-custom {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            border: none;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background: linear-gradient(45deg, #8e44ad, #7d3c98);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.4);
+            color: white;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .toggle-sidebar {
+            display: none;
+        }
+
+        .invoice-preview {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .invoice-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+            border-bottom: 1px dotted #ccc;
+            padding-bottom: 0.2rem;
+        }
+
+        .invoice-total {
+            border-top: 2px solid #333;
+            padding-top: 0.5rem;
+            font-weight: bold;
+        }
+
+        .service-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .service-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .service-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #9b59b6;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .toggle-sidebar {
+                display: block;
+            }
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="p-4">
+            <div class="text-center mb-4">
+                <div class="user-avatar mx-auto mb-2" id="currentUserAvatar">💰</div>
+                <h5 id="currentUserName">محمد علي</h5>
+                <small class="text-muted" id="currentUserRole">كاشير</small>
+            </div>
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#pos" data-bs-toggle="tab">
+                        <i class="fas fa-cash-register me-2"></i>نقطة البيع
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#invoices" data-bs-toggle="tab">
+                        <i class="fas fa-file-invoice me-2"></i>الفواتير
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#payments" data-bs-toggle="tab">
+                        <i class="fas fa-credit-card me-2"></i>المدفوعات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#financial" data-bs-toggle="tab">
+                        <i class="fas fa-chart-line me-2"></i>التقارير المالية
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#patients" data-bs-toggle="tab">
+                        <i class="fas fa-user-injured me-2"></i>المرضى
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#services" data-bs-toggle="tab">
+                        <i class="fas fa-tooth me-2"></i>الخدمات
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#settings" data-bs-toggle="tab">
+                        <i class="fas fa-cog me-2"></i>الإعدادات
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <a class="nav-link text-warning" href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-2"></i>تسجيل الخروج
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <button class="btn btn-outline-light toggle-sidebar me-2" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <span class="navbar-brand mb-0 h1">
+                    <i class="fas fa-cash-register me-2"></i>نقطة البيع
+                </span>
+                
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-bell me-1"></i>
+                            <span class="badge bg-danger">2</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">دفعة معلقة من أحمد محمد</a></li>
+                            <li><a class="dropdown-item" href="#">فاتورة تحتاج مراجعة</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="container-fluid p-4">
+            <div class="tab-content">
+                <!-- POS System Tab -->
+                <div class="tab-pane fade show active" id="pos">
+                    <h2 class="section-title">
+                        <i class="fas fa-cash-register me-2"></i>نظام نقطة البيع المتقدم
+                    </h2>
+                    
+                    <div class="row">
+                        <!-- حاسبة متقدمة -->
+                        <div class="col-lg-3">
+                            <div class="calculator">
+                                <div class="calc-display" id="calcDisplay">0.00</div>
+                                <div class="calc-buttons">
+                                    <button class="calc-btn" onclick="calcInput('7')">7</button>
+                                    <button class="calc-btn" onclick="calcInput('8')">8</button>
+                                    <button class="calc-btn" onclick="calcInput('9')">9</button>
+                                    <button class="calc-btn operator" onclick="calcOperation('/')">÷</button>
+                                    
+                                    <button class="calc-btn" onclick="calcInput('4')">4</button>
+                                    <button class="calc-btn" onclick="calcInput('5')">5</button>
+                                    <button class="calc-btn" onclick="calcInput('6')">6</button>
+                                    <button class="calc-btn operator" onclick="calcOperation('*')">×</button>
+                                    
+                                    <button class="calc-btn" onclick="calcInput('1')">1</button>
+                                    <button class="calc-btn" onclick="calcInput('2')">2</button>
+                                    <button class="calc-btn" onclick="calcInput('3')">3</button>
+                                    <button class="calc-btn operator" onclick="calcOperation('-')">-</button>
+                                    
+                                    <button class="calc-btn" onclick="calcClear()">C</button>
+                                    <button class="calc-btn" onclick="calcInput('0')">0</button>
+                                    <button class="calc-btn" onclick="calcDecimal()">.</button>
+                                    <button class="calc-btn operator" onclick="calcOperation('+')">+</button>
+                                    
+                                    <button class="calc-btn equals" onclick="calcEquals()" style="grid-column: span 4;">=</button>
+                                </div>
+                            </div>
+                            
+                            <!-- ملخص المبلغ -->
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h6><i class="fas fa-calculator me-2"></i>ملخص المبلغ</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>المجموع الفرعي:</span>
+                                        <span id="subtotal">0.00 ريال</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>الضريبة (15%):</span>
+                                        <span id="tax">0.00 ريال</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>الخصم:</span>
+                                        <span id="discount">0.00 ريال</span>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between">
+                                        <strong>المجموع الكلي:</strong>
+                                        <strong id="total">0.00 ريال</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- خدمات العيادة -->
+                        <div class="col-lg-5">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-tooth me-2"></i>خدمات العيادة</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="service-item">
+                                                <h6>فحص شامل</h6>
+                                                <div class="service-price">50 ريال</div>
+                                                <button class="btn btn-sm btn-custom mt-2" onclick="addService('فحص شامل', 50)">
+                                                    <i class="fas fa-plus me-1"></i>إضافة
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="service-item">
+                                                <h6>تنظيف أسنان</h6>
+                                                <div class="service-price">80 ريال</div>
+                                                <button class="btn btn-sm btn-custom mt-2" onclick="addService('تنظيف أسنان', 80)">
+                                                    <i class="fas fa-plus me-1"></i>إضافة
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="service-item">
+                                                <h6>علاج تسوس بسيط</h6>
+                                                <div class="service-price">150 ريال</div>
+                                                <button class="btn btn-sm btn-custom mt-2" onclick="addService('علاج تسوس بسيط', 150)">
+                                                    <i class="fas fa-plus me-1"></i>إضافة
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="service-item">
+                                                <h6>خلع ضرس</h6>
+                                                <div class="service-price">200 ريال</div>
+                                                <button class="btn btn-sm btn-custom mt-2" onclick="addService('خلع ضرس', 200)">
+                                                    <i class="fas fa-plus me-1"></i>إضافة
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="service-item">
+                                                <h6>تبييض أسنان</h6>
+                                                <div class="service-price">300 ريال</div>
+                                                <button class="btn btn-sm btn-custom mt-2" onclick="addService('تبييض أسنان', 300)">
+                                                    <i class="fas fa-plus me-1"></i>إضافة
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="service-item">
+                                                <h6>تقويم أسنان</h6>
+                                                <div class="service-price">1500 ريال</div>
+                                                <button class="btn btn-sm btn-custom mt-2" onclick="addService('تقويم أسنان', 1500)">
+                                                    <i class="fas fa-plus me-1"></i>إضافة
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- منطقة الدفع -->
+                        <div class="col-lg-4">
+                            <div class="pos-container">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-credit-card me-2"></i>معلومات المريض والدفع</h5>
+                                </div>
+                                <div class="card-body">
+                                    <!-- بحث عن مريض -->
+                                    <div class="mb-3">
+                                        <label class="form-label">البحث عن مريض</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="patientSearch" placeholder="الاسم أو رقم الهاتف...">
+                                            <button class="btn btn-outline-secondary" onclick="searchPatient()">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- معلومات المريض -->
+                                    <div id="patientInfo" class="mb-3" style="display: none;">
+                                        <div class="alert alert-info">
+                                            <h6>علي محمد الأحمد</h6>
+                                            <p class="mb-0">P-2025-001 | 00967-777-123460</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- طرق الدفع -->
+                                    <div class="payment-methods">
+                                        <h6>طريقة الدفع</h6>
+                                        <div class="payment-option" onclick="selectPayment('cash')">
+                                            <i class="fas fa-money-bill-wave fa-2x mb-2 text-success"></i>
+                                            <h6>نقدي</h6>
+                                            <small class="text-muted">دفع نقدي مباشر</small>
+                                        </div>
+                                        
+                                        <div class="payment-option" onclick="selectPayment('card')">
+                                            <i class="fas fa-credit-card fa-2x mb-2 text-primary"></i>
+                                            <h6>بطاقة ائتمان</h6>
+                                            <small class="text-muted">فيزا، ماستركارد</small>
+                                        </div>
+                                        
+                                        <div class="payment-option" onclick="selectPayment('installment')">
+                                            <i class="fas fa-calendar-alt fa-2x mb-2 text-warning"></i>
+                                            <h6>أقساط</h6>
+                                            <small class="text-muted">دفع على دفعات</small>
+                                        </div>
+                                        
+                                        <div class="payment-option" onclick="selectPayment('insurance')">
+                                            <i class="fas fa-shield-alt fa-2x mb-2 text-info"></i>
+                                            <h6>تأمين</h6>
+                                            <small class="text-muted">شركة التأمين</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- أزرار العمليات -->
+                                    <div class="d-grid gap-2 mt-3">
+                                        <button class="btn btn-success btn-lg" onclick="processPayment()">
+                                            <i class="fas fa-check me-2"></i>تأكيد الدفع
+                                        </button>
+                                        <button class="btn btn-outline-secondary" onclick="saveDraft()">
+                                            <i class="fas fa-save me-2"></i>حفظ مسودة
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="clearOrder()">
+                                            <i class="fas fa-trash me-2"></i>إلغاء الطلب
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- عرض الفاتورة -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5><i class="fas fa-file-invoice me-2"></i>فاتورة حالية</h5>
+                                    <button class="btn btn-outline-primary" onclick="printInvoice()">
+                                        <i class="fas fa-print me-2"></i>طباعة
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="invoice-preview" id="invoicePreview">
+                                        <div class="text-center mb-3">
+                                            <h4>عيادة العامر للأسنان</h4>
+                                            <p>عدن، اليمن | هاتف: 00967-777-123456</p>
+                                        </div>
+                                        <div id="invoiceItems">
+                                            <!-- سيتم ملء الفاتورة هنا -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoices Tab -->
+                <div class="tab-pane fade" id="invoices">
+                    <h2 class="section-title">
+                        <i class="fas fa-file-invoice me-2"></i>إدارة الفواتير
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <input type="date" class="form-control" id="invoiceDate" value="2025-11-10">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="invoiceStatus">
+                                <option value="">جميع الحالات</option>
+                                <option value="paid">مدفوعة</option>
+                                <option value="pending">معلقة</option>
+                                <option value="partial">جزئية</option>
+                                <option value="overdue">متأخرة</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="invoiceSearch" placeholder="البحث في الفواتير...">
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <button class="btn btn-custom" onclick="createNewInvoice()">
+                                <i class="fas fa-plus me-2"></i>فاتورة جديدة
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="invoicesList">
+                        <!-- سيتم ملء المحتوى بواسطة JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Payments Tab -->
+                <div class="tab-pane fade" id="payments">
+                    <h2 class="section-title">
+                        <i class="fas fa-credit-card me-2"></i>إدارة المدفوعات
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <input type="date" class="form-control" id="paymentDate" value="2025-11-10">
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="paymentMethod">
+                                <option value="">جميع الطرق</option>
+                                <option value="cash">نقدي</option>
+                                <option value="card">بطاقة ائتمان</option>
+                                <option value="installment">أقساط</option>
+                                <option value="insurance">تأمين</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="paymentSearch" placeholder="البحث في المدفوعات...">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="paymentsList">
+                        <!-- سيتم ملء المحتوى بواسطة JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Financial Reports Tab -->
+                <div class="tab-pane fade" id="financial">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-line me-2"></i>التقارير المالية
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stat-card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-success" id="todayRevenue">1,250 ريال</h3>
+                                    <p class="mb-0">إيرادات اليوم</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-primary" id="monthlyRevenue">35,600 ريال</h3>
+                                    <p class="mb-0">إيرادات الشهر</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-warning" id="pendingPayments">8,200 ريال</h3>
+                                    <p class="mb-0">المدفوعات المعلقة</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-info" id="averageTransaction">156 ريال</h3>
+                                    <p class="mb-0">متوسط المعاملة</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h5>تحليل الإيرادات اليومية</h5>
+                        <canvas id="revenueChart" height="100"></canvas>
+                    </div>
+                </div>
+
+                <!-- Patients Tab -->
+                <div class="tab-pane fade" id="patients">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-injured me-2"></i>المرضى
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="patientSearchFinancial" placeholder="البحث في المرضى...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-custom" onclick="viewPatientAccount()">
+                                <i class="fas fa-eye me-2"></i>عرض حساب المريض
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="patientsFinancialList">
+                        <!-- سيتم ملء المحتوى بواسطة JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Services Tab -->
+                <div class="tab-pane fade" id="services">
+                    <h2 class="section-title">
+                        <i class="fas fa-tooth me-2"></i>إدارة الخدمات والأسعار
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="serviceSearch" placeholder="البحث في الخدمات...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-custom" onclick="addNewService()">
+                                <i class="fas fa-plus me-2"></i>إضافة خدمة جديدة
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="servicesList">
+                        <!-- سيتم ملء المحتوى بواسطة JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="tab-pane fade" id="settings">
+                    <h2 class="section-title">
+                        <i class="fas fa-cog me-2"></i>إعدادات النظام
+                    </h2>
+                    
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-percentage me-2"></i>إعدادات الضرائب والأسعار</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">نسبة الضريبة (%)</label>
+                                        <input type="number" class="form-control" id="taxRate" value="15" min="0" max="30">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">نسبة الخصم الافتراضية (%)</label>
+                                        <input type="number" class="form-control" id="defaultDiscount" value="0" min="0" max="50">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">العملة</label>
+                                        <select class="form-select" id="currency">
+                                            <option value="SAR" selected>ريال سعودي (SAR)</option>
+                                            <option value="YER">ريال يمني (YER)</option>
+                                            <option value="USD">دولار أمريكي (USD)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-print me-2"></i>إعدادات الطباعة</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="autoPrint" checked>
+                                        <label class="form-check-label">طباعة تلقائية للفواتير</label>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="printReceipt" checked>
+                                        <label class="form-check-label">طباعة إيصال للمريض</label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">نوع الطابعة</label>
+                                        <select class="form-select" id="printerType">
+                                            <option value="thermal" selected>طابعة حرارية</option>
+                                            <option value="laser">طابعة ليزر</option>
+                                            <option value="inkjet">طابعة نافثة حبر</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button class="btn btn-custom" onclick="saveSettings()">
+                                    <i class="fas fa-save me-2"></i>حفظ الإعدادات
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="resetSettings()">
+                                    <i class="fas fa-undo me-2"></i>استعادة الافتراضي
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- نظام المصادقة المتقدم -->
+    <script src="advanced_auth_system.js"></script>
+    
+    <script>
+        let currentUser = null;
+        let authSystem = null;
+        let currentOrder = [];
+        let calcValue = 0;
+        let calcOperation = null;
+        let calcDisplay = 0;
+        let selectedPayment = null;
+
+        // متغيرات الطلب
+        let orderItems = [];
+        let orderTotal = 0;
+        let orderSubtotal = 0;
+        let orderTax = 0;
+        let orderDiscount = 0;
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            // فحص تسجيل الدخول
+            authSystem = new AdvancedAuthSystem();
+            if (!authSystem.currentUser || authSystem.currentUser.role !== 'cashier') {
+                window.location.href = 'advanced_login.html';
+                return;
+            }
+
+            currentUser = authSystem.currentUser;
+            updateUserInfo();
+            updateOrderDisplay();
+            initializeCharts();
+        });
+
+        // تحديث معلومات المستخدم
+        function updateUserInfo() {
+            document.getElementById('currentUserName').textContent = currentUser.fullName;
+            document.getElementById('currentUserRole').textContent = 'كاشير';
+            document.getElementById('currentUserAvatar').textContent = currentUser.avatar || '💰';
+        }
+
+        // دوال الحاسبة المتقدمة
+        function calcInput(num) {
+            calcDisplay = calcDisplay * 10 + parseInt(num);
+            document.getElementById('calcDisplay').textContent = calcDisplay.toFixed(2);
+        }
+
+        function calcOperation(op) {
+            if (calcValue === 0) {
+                calcValue = calcDisplay;
+            } else if (calcOperation) {
+                calcDisplay = calculate(calcValue, calcDisplay, calcOperation);
+            }
+            calcOperation = op;
+            document.getElementById('calcDisplay').textContent = calcDisplay.toFixed(2);
+        }
+
+        function calcEquals() {
+            if (calcOperation) {
+                calcDisplay = calculate(calcValue, calcDisplay, calcOperation);
+                calcOperation = null;
+                document.getElementById('calcDisplay').textContent = calcDisplay.toFixed(2);
+            }
+        }
+
+        function calcClear() {
+            calcDisplay = 0;
+            calcOperation = null;
+            calcValue = 0;
+            document.getElementById('calcDisplay').textContent = calcDisplay.toFixed(2);
+        }
+
+        function calcDecimal() {
+            const display = document.getElementById('calcDisplay');
+            if (display.textContent.indexOf('.') === -1) {
+                display.textContent += '.';
+            }
+        }
+
+        function calculate(a, b, op) {
+            switch(op) {
+                case '+': return a + b;
+                case '-': return a - b;
+                case '*': return a * b;
+                case '/': return b !== 0 ? a / b : 0;
+                default: return b;
+            }
+        }
+
+        // إدارة الطلبات
+        function addService(name, price) {
+            const existingItem = orderItems.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.quantity += 1;
+                existingItem.total = existingItem.quantity * existingItem.price;
+            } else {
+                orderItems.push({
+                    name: name,
+                    price: price,
+                    quantity: 1,
+                    total: price
+                });
+            }
+            updateOrderDisplay();
+        }
+
+        function updateOrderDisplay() {
+            orderSubtotal = orderItems.reduce((sum, item) => sum + item.total, 0);
+            orderTax = orderSubtotal * 0.15; // 15% ضريبة
+            orderTotal = orderSubtotal + orderTax - orderDiscount;
+
+            // تحديث العرض
+            document.getElementById('subtotal').textContent = orderSubtotal.toFixed(2) + ' ريال';
+            document.getElementById('tax').textContent = orderTax.toFixed(2) + ' ريال';
+            document.getElementById('discount').textContent = orderDiscount.toFixed(2) + ' ريال';
+            document.getElementById('total').textContent = orderTotal.toFixed(2) + ' ريال';
+
+            // تحديث الفاتورة
+            updateInvoiceDisplay();
+        }
+
+        function updateInvoiceDisplay() {
+            const invoiceItems = document.getElementById('invoiceItems');
+            let html = '';
+            
+            orderItems.forEach(item => {
+                html += `
+                    <div class="invoice-line">
+                        <span>${item.name} x${item.quantity}</span>
+                        <span>${item.total.toFixed(2)} ريال</span>
+                    </div>
+                `;
+            });
+            
+            if (orderItems.length === 0) {
+                html = '<p class="text-center text-muted">لا توجد عناصر في الطلب</p>';
+            }
+            
+            // إضافة الضرائب والخصومات
+            if (orderSubtotal > 0) {
+                html += `
+                    <div class="invoice-line">
+                        <span>المجموع الفرعي:</span>
+                        <span>${orderSubtotal.toFixed(2)} ريال</span>
+                    </div>
+                    <div class="invoice-line">
+                        <span>الضريبة (15%):</span>
+                        <span>${orderTax.toFixed(2)} ريال</span>
+                    </div>
+                    ${orderDiscount > 0 ? `
+                    <div class="invoice-line">
+                        <span>الخصم:</span>
+                        <span>-${orderDiscount.toFixed(2)} ريال</span>
+                    </div>
+                    ` : ''}
+                    <div class="invoice-line invoice-total">
+                        <span>المجموع الكلي:</span>
+                        <span>${orderTotal.toFixed(2)} ريال</span>
+                    </div>
+                `;
+            }
+            
+            invoiceItems.innerHTML = html;
+        }
+
+        function clearOrder() {
+            if (confirm('هل تريد إلغاء الطلب الحالي؟')) {
+                orderItems = [];
+                orderTotal = 0;
+                orderSubtotal = 0;
+                orderTax = 0;
+                orderDiscount = 0;
+                calcClear();
+                updateOrderDisplay();
+                showAlert('تم إلغاء الطلب', 'info');
+            }
+        }
+
+        function saveDraft() {
+            if (orderItems.length === 0) {
+                showAlert('لا يوجد طلب للحفظ', 'warning');
+                return;
+            }
+            showAlert('تم حفظ الطلب كمسودة', 'success');
+        }
+
+        // إدارة طرق الدفع
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        function processPayment() {
+            if (orderItems.length === 0) {
+                showAlert('لا يوجد طلب للمعالجة', 'warning');
+                return;
+            }
+            
+            if (!selectedPayment) {
+                showAlert('يرجى اختيار طريقة الدفع', 'warning');
+                return;
+            }
+            
+            showAlert(`تم معالجة الدفع بمبلغ ${orderTotal.toFixed(2)} ريال عن طريق ${getPaymentMethodName(selectedPayment)}`, 'success');
+            
+            // طباعة الفاتورة
+            setTimeout(() => {
+                printInvoice();
+            }, 1000);
+            
+            // مسح الطلب
+            clearOrder();
+        }
+
+        function getPaymentMethodName(method) {
+            const names = {
+                'cash': 'نقدي',
+                'card': 'بطاقة ائتمان',
+                'installment': 'أقساط',
+                'insurance': 'تأمين'
+            };
+            return names[method] || method;
+        }
+
+        // طباعة الفاتورة
+        function printInvoice() {
+            const printContent = document.getElementById('invoicePreview').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>فاتورة عيادة العامر</title>
+                        <style>
+                            body { font-family: 'Courier New', monospace; font-size: 12px; }
+                            .text-center { text-align: center; }
+                            .mb-3 { margin-bottom: 1rem; }
+                            .invoice-line { 
+                                display: flex; 
+                                justify-content: space-between; 
+                                margin-bottom: 0.3rem; 
+                                border-bottom: 1px dotted #ccc; 
+                                padding-bottom: 0.2rem; 
+                            }
+                            .invoice-total { 
+                                border-top: 2px solid #333; 
+                                padding-top: 0.5rem; 
+                                font-weight: bold; 
+                            }
+                        </style>
+                    </head>
+                    <body>${printContent}</body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // البحث عن المرضى
+        function searchPatient() {
+            const query = document.getElementById('patientSearch').value;
+            if (query.trim()) {
+                document.getElementById('patientInfo').style.display = 'block';
+                showAlert('تم العثور على المريض', 'success');
+            } else {
+                showAlert('يرجى إدخال اسم المريض أو رقم الهاتف', 'warning');
+            }
+        }
+
+        // تهيئة الرسوم البيانية
+        function initializeCharts() {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'],
+                    datasets: [{
+                        label: 'الإيرادات اليومية',
+                        data: [1200, 1500, 1800, 900, 1100, 1600, 1250],
+                        borderColor: '#9b59b6',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // إدارة الشريط الجانبي
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                authSystem.logout();
+                window.location.href = 'advanced_login.html';
+            }
+        }
+
+        // دوال أخرى
+        function createNewInvoice() {
+            alert('سيتم فتح نافذة إنشاء فاتورة جديدة');
+        }
+
+        function viewPatientAccount() {
+            alert('سيتم عرض حساب المريض');
+        }
+
+        function addNewService() {
+            alert('سيتم فتح نافذة إضافة خدمة جديدة');
+        }
+
+        function saveSettings() {
+            showAlert('تم حفظ الإعدادات بنجاح', 'success');
+        }
+
+        function resetSettings() {
+            if (confirm('هل تريد استعادة الإعدادات الافتراضية؟')) {
+                showAlert('تم استعادة الإعدادات الافتراضية', 'info');
+            }
+        }
+
+        // عرض التنبيهات
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // دوال إضافية
+        function viewInvoice(invoiceId) {
+            alert(`سيتم عرض الفاتورة: ${invoiceId}`);
+        }
+
+        function refundPayment(paymentId) {
+            if (confirm('هل تريد استرداد هذا المبلغ؟')) {
+                showAlert('تم استرداد المبلغ بنجاح', 'success');
+            }
+        }
+
+        function editService(serviceId) {
+            alert(`سيتم تعديل الخدمة: ${serviceId}`);
+        }
+
+        function deleteService(serviceId) {
+            if (confirm('هل تريد حذف هذه الخدمة؟')) {
+                showAlert('تم حذف الخدمة', 'success');
+            }
+        }
+    </script>
+</body>
+</html>

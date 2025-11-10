@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المريض - عيادة العامر للأسنان</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            min-height: 100vh;
+            position: fixed;
+            width: 280px;
+            right: 0;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .main-content {
+            margin-right: 280px;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(45deg, #3498db, #2980b9) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .patient-profile {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .patient-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            margin: 0 auto 1rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: none;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            border-radius: 8px;
+            margin: 0.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.1) !important;
+            color: white !important;
+            transform: translateX(-5px);
+        }
+
+        .section-title {
+            color: #3498db;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+
+        .appointment-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-right: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .appointment-upcoming { border-right-color: #f39c12; }
+        .appointment-completed { border-right-color: #27ae60; }
+        .appointment-cancelled { border-right-color: #e74c3c; }
+
+        .medical-record {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-right: 3px solid #3498db;
+        }
+
+        .booking-form {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .time-slot {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .time-slot:hover {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .time-slot.booked {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .time-slot.available {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .time-slot.selected {
+            background: #3498db;
+            border-color: #2980b9;
+            color: white;
+        }
+
+        .payment-history {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .notification-item {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            border-right: 4px solid;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .notification-info { border-right-color: #3498db; }
+        .notification-success { border-right-color: #27ae60; }
+        .notification-warning { border-right-color: #f39c12; }
+
+        .alert-custom {
+            border: none;
+            border-radius: 12px;
+            border-right: 4px solid;
+        }
+
+        .alert-info { border-right-color: #3498db; }
+        .alert-success { border-right-color: #27ae60; }
+        .alert-warning { border-right-color: #f39c12; }
+        .alert-danger { border-right-color: #e74c3c; }
+
+        .btn-custom {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            border: none;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background: linear-gradient(45deg, #2980b9, #1f4e79);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+        .toggle-sidebar {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .toggle-sidebar {
+                display: block;
+            }
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .profile-edit-btn {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="p-4">
+            <div class="text-center mb-4">
+                <div class="user-avatar mx-auto mb-2" id="currentUserAvatar">👤</div>
+                <h5 id="currentUserName">علي محمد الأحمد</h5>
+                <small class="text-muted" id="currentUserRole">مريض</small>
+            </div>
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#dashboard" data-bs-toggle="tab">
+                        <i class="fas fa-tachometer-alt me-2"></i>لوحة التحكم
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#appointments" data-bs-toggle="tab">
+                        <i class="fas fa-calendar-check me-2"></i>مواعيدي
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#book-appointment" data-bs-toggle="tab">
+                        <i class="fas fa-calendar-plus me-2"></i>حجز موعد
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#medical-history" data-bs-toggle="tab">
+                        <i class="fas fa-file-medical me-2"></i>سجلي الطبي
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#payments" data-bs-toggle="tab">
+                        <i class="fas fa-receipt me-2"></i>مدفوعاتي
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#profile" data-bs-toggle="tab">
+                        <i class="fas fa-user me-2"></i>الملف الشخصي
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#notifications" data-bs-toggle="tab">
+                        <i class="fas fa-bell me-2"></i>الإشعارات
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <a class="nav-link text-warning" href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-2"></i>تسجيل الخروج
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <button class="btn btn-outline-light toggle-sidebar me-2" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <span class="navbar-brand mb-0 h1">
+                    <i class="fas fa-user me-2"></i>منطقة المريض
+                </span>
+                
+                <div class="navbar-nav ms-auto">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-bell me-1"></i>
+                            <span class="badge bg-danger">2</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">تذكير: موعدك غداً في 10:00 ص</a></li>
+                            <li><a class="dropdown-item" href="#">فاتورة جديدة: 200 ريال</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="container-fluid p-4">
+            <div class="tab-content">
+                <!-- Dashboard Tab -->
+                <div class="tab-pane fade show active" id="dashboard">
+                    <h2 class="section-title">
+                        <i class="fas fa-tachometer-alt me-2"></i>لوحة التحكم الرئيسية
+                    </h2>
+                    
+                    <!-- Patient Profile -->
+                    <div class="patient-profile position-relative">
+                        <button class="btn btn-outline-primary profile-edit-btn" onclick="editProfile()">
+                            <i class="fas fa-edit"></i> تعديل
+                        </button>
+                        <div class="patient-avatar" id="patientAvatar">👤</div>
+                        <h3 id="patientName">علي محمد الأحمد</h3>
+                        <p class="text-muted mb-1" id="patientNumber">رقم المريض: P-2025-001</p>
+                        <p class="text-muted mb-3" id="patientEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8afaebfee3efe4febbcaefe7ebe3e6a4e9e5e7">[email&#160;protected]</a></p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <p><i class="fas fa-phone me-2"></i><span id="patientPhone">00967-777-123460</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><i class="fas fa-calendar me-2"></i>عضو منذ: <span id="memberSince">2025-01-15</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Statistics -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon" style="background: linear-gradient(45deg, #f39c12, #e67e22);">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h4 class="mb-0" id="upcomingAppointments">1</h4>
+                                        <small class="text-muted">موعد قادم</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon" style="background: linear-gradient(45deg, #27ae60, #2ecc71);">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h4 class="mb-0" id="completedAppointments">3</h4>
+                                        <small class="text-muted">موعد مكتمل</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon" style="background: linear-gradient(45deg, #9b59b6, #8e44ad);">
+                                        <i class="fas fa-receipt"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h4 class="mb-0" id="totalPayments">450 ريال</h4>
+                                        <small class="text-muted">إجمالي المدفوعات</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon" style="background: linear-gradient(45deg, #e74c3c, #c0392b);">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h4 class="mb-0" id="pendingPayments">0 ريال</h4>
+                                        <small class="text-muted">مدفوعات معلقة</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h4 class="mb-3">الإجراءات السريعة</h4>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="btn-custom d-flex align-items-center justify-content-center p-3 text-center" onclick="switchToBooking()">
+                                <div>
+                                    <i class="fas fa-calendar-plus fa-2x mb-2"></i>
+                                    <h6>حجز موعد جديد</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="btn-custom d-flex align-items-center justify-content-center p-3 text-center" onclick="viewMedicalHistory()">
+                                <div>
+                                    <i class="fas fa-file-medical fa-2x mb-2"></i>
+                                    <h6>عرض السجل الطبي</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="btn-custom d-flex align-items-center justify-content-center p-3 text-center" onclick="viewPayments()">
+                                <div>
+                                    <i class="fas fa-receipt fa-2x mb-2"></i>
+                                    <h6>عرض المدفوعات</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="btn-custom d-flex align-items-center justify-content-center p-3 text-center" onclick="contactClinic()">
+                                <div>
+                                    <i class="fas fa-phone fa-2x mb-2"></i>
+                                    <h6>التواصل مع العيادة</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Upcoming Appointments -->
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-calendar-day me-2"></i>مواعيدي القادمة</h5>
+                                </div>
+                                <div class="card-body" id="upcomingAppointmentsList">
+                                    <!-- سيتم ملء المحتوى بواسطة JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="chart-container">
+                                <h5>إحصائياتي</h5>
+                                <canvas id="patientStatsChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appointments Tab -->
+                <div class="tab-pane fade" id="appointments">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-check me-2"></i>إدارة المواعيد
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <select class="form-select" id="appointmentFilter">
+                                <option value="">جميع المواعيد</option>
+                                <option value="upcoming">المواعيد القادمة</option>
+                                <option value="completed">المكتملة</option>
+                                <option value="cancelled">الملغية</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="date" class="form-control" id="appointmentDateFilter">
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-custom" onclick="switchToBooking()">
+                                <i class="fas fa-plus me-2"></i>حجز موعد جديد
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="appointmentsList">
+                        <!-- سيتم ملء المحتوى بواسطة JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Book Appointment Tab -->
+                <div class="tab-pane fade" id="book-appointment">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-plus me-2"></i>حجز موعد جديد
+                    </h2>
+                    
+                    <div class="booking-form">
+                        <form id="appointmentBookingForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <select class="form-select" id="serviceType" required>
+                                            <option value="">اختر نوع الخدمة</option>
+                                            <option value="checkup">فحص شامل</option>
+                                            <option value="cleaning">تنظيف أسنان</option>
+                                            <option value="treatment">علاج تسوس</option>
+                                            <option value="extraction">خلع ضرس</option>
+                                            <option value="whitening">تبييض أسنان</option>
+                                            <option value="orthodontics">تقويم أسنان</option>
+                                        </select>
+                                        <label for="serviceType">نوع الخدمة</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <select class="form-select" id="preferredDoctor" required>
+                                            <option value="">اختر الطبيب المفضل</option>
+                                            <option value="doctor1">د. أحمد العامر</option>
+                                        </select>
+                                        <label for="preferredDoctor">الطبيب المفضل</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" id="preferredDate" required>
+                                <label for="preferredDate">التاريخ المفضل</label>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">الأوقات المتاحة</label>
+                                <div class="row" id="availableTimes">
+                                    <div class="col-md-3 mb-2">
+                                        <div class="time-slot available" onclick="selectTime(this)">09:00 ص</div>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <div class="time-slot available" onclick="selectTime(this)">10:30 ص</div>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <div class="time-slot booked">11:00 ص</div>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <div class="time-slot available" onclick="selectTime(this)">02:00 م</div>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <div class="time-slot available" onclick="selectTime(this)">03:30 م</div>
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <div class="time-slot available" onclick="selectTime(this)">05:00 م</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-floating mb-3">
+                                <textarea class="form-control" id="appointmentNotes" placeholder="ملاحظات إضافية..." style="height: 100px;"></textarea>
+                                <label for="appointmentNotes">ملاحظات إضافية</label>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="alert alert-info">
+                                        <h6><i class="fas fa-info-circle me-2"></i>معلومات الحجز</h6>
+                                        <p class="mb-0" id="bookingInfo">يرجى اختيار الخدمة والتاريخ</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <button type="submit" class="btn btn-custom btn-lg">
+                                        <i class="fas fa-calendar-check me-2"></i>تأكيد الحجز
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Medical History Tab -->
+                <div class="tab-pane fade" id="medical-history">
+                    <h2 class="section-title">
+                        <i class="fas fa-file-medical me-2"></i>سجلي الطبي
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <h5>العلاجات السابقة</h5>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-outline-primary" onclick="downloadMedicalReport()">
+                                <i class="fas fa-download me-2"></i>تحميل تقرير طبي
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="medicalHistoryList">
+                        <!-- سيتم ملء المحتوى بواسطة JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Payments Tab -->
+                <div class="tab-pane fade" id="payments">
+                    <h2 class="section-title">
+                        <i class="fas fa-receipt me-2"></i>مدفوعاتي
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="paymentSearch" placeholder="البحث في المدفوعات...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-outline-primary" onclick="viewInvoice()">
+                                <i class="fas fa-eye me-2"></i>عرض الفواتير
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div id="paymentsList">
+                                <!-- سيتم ملء المحتوى بواسطة JavaScript -->
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-chart-pie me-2"></i>ملخص المدفوعات</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>إجمالي المدفوعات:</span>
+                                        <strong>450 ريال</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>هذا الشهر:</span>
+                                        <strong>250 ريال</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>الرصيد المتبقي:</span>
+                                        <strong class="text-success">0 ريال</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Tab -->
+                <div class="tab-pane fade" id="profile">
+                    <h2 class="section-title">
+                        <i class="fas fa-user me-2"></i>الملف الشخصي
+                    </h2>
+                    
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <form id="profileForm">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-edit me-2"></i>تعديل المعلومات الشخصية</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control" id="fullName" value="علي محمد الأحمد" required>
+                                                    <label for="fullName">الاسم الكامل</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3">
+                                                    <input type="email" class="form-control" id="email" value="patient1@email.com" required>
+                                                    <label for="email">البريد الإلكتروني</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3">
+                                                    <input type="tel" class="form-control" id="phone" value="00967-777-123460" required>
+                                                    <label for="phone">رقم الهاتف</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3">
+                                                    <input type="date" class="form-control" id="dateOfBirth" value="1990-05-15">
+                                                    <label for="dateOfBirth">تاريخ الميلاد</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="gender">
+                                                <option value="male" selected>ذكر</option>
+                                                <option value="female">أنثى</option>
+                                            </select>
+                                            <label for="gender">الجنس</label>
+                                        </div>
+                                        
+                                        <div class="form-floating mb-3">
+                                            <textarea class="form-control" id="address" placeholder="العنوان">عدن، اليمن</textarea>
+                                            <label for="address">العنوان</label>
+                                        </div>
+                                        
+                                        <div class="form-floating mb-3">
+                                            <textarea class="form-control" id="medicalHistory" placeholder="التاريخ المرضي">لا يوجد تاريخ مرضي مهم</textarea>
+                                            <label for="medicalHistory">التاريخ المرضي</label>
+                                        </div>
+                                        
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-custom">
+                                                <i class="fas fa-save me-2"></i>حفظ التغييرات
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-lock me-2"></i>الأمان</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-primary" onclick="changePassword()">
+                                            <i class="fas fa-key me-2"></i>تغيير كلمة المرور
+                                        </button>
+                                        <button class="btn btn-outline-success" onclick="setupTwoFactor()">
+                                            <i class="fas fa-shield-alt me-2"></i>تفعيل التحقق الثنائي
+                                        </button>
+                                        <button class="btn btn-outline-info" onclick="downloadData()">
+                                            <i class="fas fa-download me-2"></i>تحميل بياناتي
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-info-circle me-2"></i>معلومات الحساب</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>رقم المريض:</strong> P-2025-001</p>
+                                    <p><strong>تاريخ التسجيل:</strong> 2025-01-15</p>
+                                    <p><strong>آخر تحديث:</strong> 2025-11-10</p>
+                                    <p><strong>حالة الحساب:</strong> <span class="badge bg-success">نشط</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications Tab -->
+                <div class="tab-pane fade" id="notifications">
+                    <h2 class="section-title">
+                        <i class="fas fa-bell me-2"></i>الإشعارات
+                    </h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <select class="form-select" id="notificationFilter">
+                                <option value="">جميع الإشعارات</option>
+                                <option value="appointment">مواعيد</option>
+                                <option value="payment">مدفوعات</option>
+                                <option value="reminder">تذكيرات</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-outline-primary" onclick="markAllAsRead()">
+                                <i class="fas fa-check me-2"></i>تحديد الكل كمقروء
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="notificationsList">
+                        <!-- سيتم ملء المحتوى بواسطة JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- نظام المصادقة المتقدم -->
+    <script src="advanced_auth_system.js"></script>
+    
+    <script>
+        let currentUser = null;
+        let authSystem = null;
+        let selectedTimeSlot = null;
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            // فحص تسجيل الدخول
+            authSystem = new AdvancedAuthSystem();
+            if (!authSystem.currentUser || authSystem.currentUser.role !== 'patient') {
+                window.location.href = 'advanced_login.html';
+                return;
+            }
+
+            currentUser = authSystem.currentUser;
+            updateUserInfo();
+            loadPatientDashboard();
+            loadUpcomingAppointments();
+            initializeCharts();
+        });
+
+        // تحديث معلومات المستخدم
+        function updateUserInfo() {
+            document.getElementById('currentUserName').textContent = currentUser.fullName;
+            document.getElementById('currentUserRole').textContent = 'مريض';
+            document.getElementById('currentUserAvatar').textContent = currentUser.avatar || '👤';
+            
+            // تحديث معلومات المريض
+            document.getElementById('patientName').textContent = currentUser.fullName;
+            document.getElementById('patientNumber').textContent = `رقم المريض: ${currentUser.patientNumber || 'P-2025-001'}`;
+            document.getElementById('patientEmail').textContent = currentUser.email;
+            document.getElementById('patientPhone').textContent = currentUser.phone;
+            document.getElementById('memberSince').textContent = currentUser.createdAt;
+        }
+
+        // تحميل بيانات لوحة المريض
+        function loadPatientDashboard() {
+            document.getElementById('upcomingAppointments').textContent = '1';
+            document.getElementById('completedAppointments').textContent = '3';
+            document.getElementById('totalPayments').textContent = '450 ريال';
+            document.getElementById('pendingPayments').textContent = '0 ريال';
+        }
+
+        // تحميل المواعيد القادمة
+        function loadUpcomingAppointments() {
+            const upcomingAppointments = [
+                {
+                    date: '2025-11-11',
+                    time: '10:00 ص',
+                    doctor: 'د. أحمد العامر',
+                    service: 'تنظيف أسنان',
+                    status: 'upcoming'
+                }
+            ];
+
+            const container = document.getElementById('upcomingAppointmentsList');
+            let html = '';
+            
+            if (upcomingAppointments.length === 0) {
+                html = '<p class="text-center text-muted">لا توجد مواعيد قادمة</p>';
+            } else {
+                upcomingAppointments.forEach(apt => {
+                    html += `
+                        <div class="appointment-card appointment-upcoming">
+                            <div class="row align-items-center">
+                                <div class="col-md-2 text-center">
+                                    <h5 class="mb-0">${apt.time}</h5>
+                                    <small class="text-muted">${apt.date}</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="mb-1">${apt.service}</h6>
+                                    <small class="text-muted">${apt.doctor}</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="badge bg-warning">قادم</span>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewAppointment('${apt.date}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="cancelAppointment('${apt.date}')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // تهيئة الرسوم البيانية
+        function initializeCharts() {
+            const ctx = document.getElementById('patientStatsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['مواعيد مكتملة', 'مواعيد معلقة', 'علاجات'],
+                    datasets: [{
+                        data: [3, 1, 2],
+                        backgroundColor: [
+                            '#27ae60',
+                            '#f39c12',
+                            '#3498db'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        }
+
+        // إدارة الشريط الجانبي
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                authSystem.logout();
+                window.location.href = 'advanced_login.html';
+            }
+        }
+
+        // دوال المواعيد
+        function selectTime(element) {
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            selectedTimeSlot = element.textContent;
+        }
+
+        function switchToBooking() {
+            const tab = new bootstrap.Tab(document.querySelector('#book-appointment'));
+            tab.show();
+        }
+
+        // دوال أخرى
+        function viewAppointment(date) {
+            alert(`سيتم عرض تفاصيل الموعد: ${date}`);
+        }
+
+        function cancelAppointment(date) {
+            if (confirm('هل تريد إلغاء هذا الموعد؟')) {
+                showAlert('تم إلغاء الموعد بنجاح', 'success');
+            }
+        }
+
+        function editProfile() {
+            const tab = new bootstrap.Tab(document.querySelector('#profile'));
+            tab.show();
+        }
+
+        function viewMedicalHistory() {
+            const tab = new bootstrap.Tab(document.querySelector('#medical-history'));
+            tab.show();
+        }
+
+        function viewPayments() {
+            const tab = new bootstrap.Tab(document.querySelector('#payments'));
+            tab.show();
+        }
+
+        function contactClinic() {
+            alert('سيتم فتح نافذة التواصل مع العيادة');
+        }
+
+        // معالجة النموذج
+        document.getElementById('appointmentBookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const service = document.getElementById('serviceType').value;
+            const doctor = document.getElementById('preferredDoctor').value;
+            const date = document.getElementById('preferredDate').value;
+            const notes = document.getElementById('appointmentNotes').value;
+            
+            if (!selectedTimeSlot) {
+                showAlert('يرجى اختيار الوقت المناسب', 'warning');
+                return;
+            }
+            
+            showAlert(`تم حجز الموعد بنجاح في ${date} الساعة ${selectedTimeSlot}`, 'success');
+            this.reset();
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            selectedTimeSlot = null;
+        });
+
+        // معالجة الملف الشخصي
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showAlert('تم حفظ التغييرات بنجاح', 'success');
+        });
+
+        // دوال أخرى
+        function changePassword() {
+            alert('سيتم فتح نافذة تغيير كلمة المرور');
+        }
+
+        function setupTwoFactor() {
+            alert('سيتم تفعيل التحقق الثنائي');
+        }
+
+        function downloadData() {
+            alert('سيتم تحضير ملف البيانات...');
+        }
+
+        function downloadMedicalReport() {
+            alert('سيتم تحميل التقرير الطبي...');
+        }
+
+        function viewInvoice() {
+            alert('سيتم عرض الفواتير');
+        }
+
+        function markAllAsRead() {
+            showAlert('تم تحديد جميع الإشعارات كمقروءة', 'success');
+        }
+
+        // عرض التنبيهات
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // تحديث معلومات الحجز
+        document.getElementById('serviceType').addEventListener('change', function() {
+            const service = this.value;
+            const prices = {
+                'checkup': 50,
+                'cleaning': 80,
+                'treatment': 150,
+                'extraction': 200,
+                'whitening': 300,
+                'orthodontics': 1500
+            };
+            
+            const price = prices[service] || 0;
+            const doctor = document.getElementById('preferredDoctor').value;
+            const info = `التكلفة: ${price} ريال${doctor ? ' | الطبيب: ' + doctor : ''}`;
+            document.getElementById('bookingInfo').textContent = info;
+        });
+
+        // تحديد التاريخ الحالي كحد أدنى
+        document.getElementById('preferredDate').setAttribute('min', new Date().toISOString().split('T')[0]);
+    </script>
+</body>
+</html>
