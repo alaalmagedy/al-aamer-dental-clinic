@@ -1,0 +1,200 @@
+#!/usr/bin/env python3
+"""
+مولد الأيقونات التلقائي لـ PWA - عيادة العامر للأسنان
+Script to generate PWA icons automatically for Aamer Dental Clinic
+"""
+
+import os
+from PIL import Image, ImageDraw, ImageFont
+import requests
+
+def create_directories():
+    """إنشاء المجلدات المطلوبة"""
+    dirs = ['icons', 'screenshots']
+    for dir_name in dirs:
+        os.makedirs(dir_name, exist_ok=True)
+    print("✅ تم إنشاء المجلدات المطلوبة")
+
+def draw_dental_icon(size, filename):
+    """رسم أيقونة أسنان بسيطة"""
+    # إنشاء صورة جديدة بخلفية متدرجة
+    img = Image.new('RGBA', (size, size), (46, 125, 50, 255))
+    draw = ImageDraw.Draw(img)
+    
+    # رسم خلفية دائرية
+    margin = size // 16
+    draw.rounded_rectangle([margin, margin, size-margin, size-margin], 
+                         radius=size//8, fill=(46, 125, 50, 255))
+    
+    # إضافة حد أبيض
+    border_width = max(2, size // 50)
+    draw.rounded_rectangle([margin, margin, size-margin, size-margin], 
+                         radius=size//8, outline=(255, 255, 255, 255), 
+                         width=border_width)
+    
+    # رسم رمز الأسنان (بسيط)
+    center_x, center_y = size // 2, size // 2
+    tooth_size = size // 3
+    
+    # رسم شكل سن بسيط
+    points = [
+        (center_x - tooth_size//3, center_y - tooth_size//2),
+        (center_x + tooth_size//3, center_y - tooth_size//2),
+        (center_x + tooth_size//2, center_y),
+        (center_x + tooth_size//3, center_y + tooth_size//2),
+        (center_x - tooth_size//3, center_y + tooth_size//2),
+        (center_x - tooth_size//2, center_y)
+    ]
+    
+    draw.polygon(points, fill=(255, 255, 255, 255))
+    
+    # حفظ الصورة
+    img.save(f'icons/{filename}', 'PNG')
+    print(f"✅ تم إنشاء {filename}")
+
+def draw_shortcut_icon(size, filename, emoji):
+    """رسم أيقونة اختصار"""
+    img = Image.new('RGBA', (size, size), (76, 175, 80, 255))
+    draw = ImageDraw.Draw(img)
+    
+    # رسم خلفية دائرية
+    margin = size // 8
+    draw.rounded_rectangle([margin, margin, size-margin, size-margin], 
+                         radius=size/6, fill=(76, 175, 80, 255))
+    
+    # إضافة حد أبيض
+    border_width = max(1, size // 30)
+    draw.rounded_rectangle([margin, margin, size-margin, size-margin], 
+                         radius=size/6, outline=(255, 255, 255, 255), 
+                         width=border_width)
+    
+    # رسم emoji كنص
+    try:
+        # محاولة استخدام خط كبير
+        font_size = size // 2
+        font = ImageFont.truetype('/System/Library/Fonts/Arial.ttf', font_size)
+    except:
+        try:
+            font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', font_size)
+        except:
+            font = ImageFont.load_default()
+    
+    # حساب موضع النص
+    bbox = draw.textbbox((0, 0), emoji, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    
+    x = (size - text_width) // 2
+    y = (size - text_height) // 2
+    
+    draw.text((x, y), emoji, font=font, fill=(255, 255, 255, 255))
+    
+    # حفظ الصورة
+    img.save(f'icons/{filename}', 'PNG')
+    print(f"✅ تم إنشاء {filename}")
+
+def generate_all_icons():
+    """إنشاء جميع الأيقونات المطلوبة"""
+    print("🎨 بدء إنشاء أيقونات PWA...")
+    
+    # أحجام الأيقونات الرئيسية
+    main_sizes = [48, 72, 96, 128, 144, 152, 192, 384, 512]
+    
+    for size in main_sizes:
+        filename = f'icon-{size}x{size}.png'
+        draw_dental_icon(size, filename)
+    
+    # أيقونات الاختصارات
+    shortcut_configs = [
+        ('shortcut-booking.png', '📅'),
+        ('shortcut-dashboard.png', '⚡'),
+        ('shortcut-pos.png', '💳')
+    ]
+    
+    for filename, emoji in shortcut_configs:
+        draw_shortcut_icon(64, filename, emoji)
+    
+    print(f"🎉 تم إنشاء {len(main_sizes) + len(shortcut_configs)} أيقونة بنجاح!")
+
+def create_placeholder_screenshots():
+    """إنشاء لقطات شاشة مؤقتة"""
+    print("📸 إنشاء لقطات شاشة مؤقتة...")
+    
+    # شاشة سطح المكتب
+    desktop_screenshot = Image.new('RGB', (1280, 720), (232, 245, 232))
+    desktop_draw = ImageDraw.Draw(desktop_screenshot)
+    
+    # رسم عناصر أساسية
+    desktop_draw.rectangle([50, 100, 600, 500], fill=(255, 255, 255), outline=(200, 200, 200))
+    desktop_draw.rectangle([650, 100, 1230, 500], fill=(255, 255, 255), outline=(200, 200, 200))
+    
+    desktop_screenshot.save('screenshots/desktop-home.png', 'PNG')
+    
+    # شاشة الهاتف المحمول
+    mobile_screenshot = Image.new('RGB', (390, 844), (232, 245, 232))
+    mobile_draw = ImageDraw.Draw(mobile_screenshot)
+    
+    # رسم عناصر الهاتف
+    mobile_draw.rectangle([30, 150, 360, 700], fill=(255, 255, 255), outline=(200, 200, 200))
+    
+    mobile_screenshot.save('screenshots/mobile-dashboard.png', 'PNG')
+    
+    print("✅ تم إنشاء لقطات الشاشة")
+
+def verify_files():
+    """التحقق من وجود الملفات"""
+    print("\n📋 التحقق من الملفات:")
+    
+    expected_files = [
+        'manifest.json',
+        'service-worker.js',
+        'PWA_FIXES_GUIDE.md',
+        'icon-generator.html'
+    ]
+    
+    for file in expected_files:
+        if os.path.exists(file):
+            print(f"✅ {file}")
+        else:
+            print(f"❌ {file} - مفقود!")
+    
+    # فحص الأيقونات
+    icon_count = len([f for f in os.listdir('icons') if f.endswith('.png')])
+    print(f"🖼️ أيقونات: {icon_count}/12")
+    
+    # فحص لقطات الشاشة
+    screenshot_count = len([f for f in os.listdir('screenshots') if f.endswith('.png')])
+    print(f"📸 لقطات الشاشة: {screenshot_count}/2")
+
+def main():
+    """الدالة الرئيسية"""
+    print("🦷 مولد PWA - عيادة العامر للأسنان")
+    print("=" * 50)
+    
+    # إنشاء المجلدات
+    create_directories()
+    
+    # إنشاء الأيقونات
+    generate_all_icons()
+    
+    # إنشاء لقطات الشاشة
+    create_placeholder_screenshots()
+    
+    # التحقق من الملفات
+    verify_files()
+    
+    print("\n🎯 الخطوات التالية:")
+    print("1. ارفع جميع الملفات إلى GitHub")
+    print("2. اذهب إلى PWABuilder.com")
+    print("3. أدخل رابط موقعك")
+    print("4. تحقق من حل جميع المشاكل")
+    print("5. جرب إنشاء تطبيق Android")
+    
+    print("\n✨ تم! تطبيقك جاهز للتحويل إلى تطبيق Android!")
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(f"❌ خطأ: {e}")
+        print("\nتأكد من تثبيت Pillow: pip install Pillow")

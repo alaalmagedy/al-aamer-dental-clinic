@@ -1,0 +1,20 @@
+#!/bin/bash
+# سكريبت رفع سريع لـ PWABuilder fixes
+
+echo "🚀 رفع ملفات PWA إلى GitHub..."
+
+# إنشاء المجلدات المطلوبة
+mkdir -p icons screenshots
+
+echo "📁 تم إنشاء المجلدات"
+
+echo "🎨 إنشاء الأيقونات..."
+python generate_icons.py
+
+echo "📤 رفع الملفات..."
+git add manifest.json service-worker.js
+git add icons/ screenshots/ 
+git commit -m "✅ PWABuilder fixes - حل جميع مشاكل PWABuilder للعيادة"
+git push origin main
+
+echo "🎉 تم! الآن اذهب إلى PWABuilder.com واختبر موقعك"
